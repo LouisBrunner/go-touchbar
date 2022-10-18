@@ -1,4 +1,4 @@
-# go-touchbar
+# go-touchbar [![Go Reference](https://pkg.go.dev/badge/github.com/LouisBrunner/go-touchbar.svg)](https://pkg.go.dev/github.com/LouisBrunner/go-touchbar)
 
 Go library to integrate the MacBook Touch Bar
 
