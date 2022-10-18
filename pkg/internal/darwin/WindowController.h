@@ -4,6 +4,8 @@
 #import <Cocoa/Cocoa.h>
 
 @interface WindowController : NSWindowController {}
+- (id)initWithData:(const char *)data;
+- (void)setData:(const char *)data;
 @end
 
 #endif

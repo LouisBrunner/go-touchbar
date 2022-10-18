@@ -1,6 +1,7 @@
 package darwin
 
 import (
+	"encoding/json"
 	"fmt"
 	"unsafe"
 
@@ -12,14 +13,16 @@ import (
 //#include "entry.h"
 import "C"
 
-type touchBar struct {
-	options contracts.Options
-	context unsafe.Pointer
-}
-
-func serializeConfig(config *contracts.Configuration) C.TouchBar {
-	// TODO: how?
-	return C.TouchBar{}
+func serializeConfig(config *contracts.Configuration) (*C.char, *handlers, error) {
+	data, handlers, err := processConfig(config)
+	if err != nil {
+		return nil, nil, err
+	}
+	buffer, err := json.Marshal(data)
+	if err != nil {
+		return nil, nil, err
+	}
+	return C.CString(string(buffer)), handlers, nil
 }
 
 func transformError(err *C.char) error {
@@ -33,6 +36,12 @@ func handleError(result C.ErrorResult) error {
 	return nil
 }
 
+//export handleEvent
+func handleEvent(raw unsafe.Pointer, event *C.char) {
+	me := (*touchBar)(raw)
+	me.handleEvent(C.GoString(event))
+}
+
 func (me *touchBar) install(debug bool) error {
 	if me.context != nil {
 		return fmt.Errorf("touch bar already initialized")
@@ -41,7 +50,13 @@ func (me *touchBar) install(debug bool) error {
 	if debug {
 		mode = C.kDebug
 	}
-	result := C.initTouchBar(C.AttachMode(mode), serializeConfig(&me.options.Configuration))
+	data, handlers, err := serializeConfig(&me.options.Configuration)
+	if err != nil {
+		return err
+	}
+	defer C.free(unsafe.Pointer(data))
+	me.handlers = handlers
+	result := C.initTouchBar(C.AttachMode(mode), data, unsafe.Pointer(me))
 	if result.err != nil {
 		return transformError(result.err)
 	}
@@ -65,7 +80,13 @@ func (me *touchBar) Update(configuration contracts.Configuration) error {
 	if me.context == nil {
 		return fmt.Errorf("touch bar has not been initialized")
 	}
-	return handleError(C.updateTouchBar(me.context, serializeConfig(&configuration)))
+	data, handlers, err := serializeConfig(&me.options.Configuration)
+	if err != nil {
+		return err
+	}
+	defer C.free(unsafe.Pointer(data))
+	me.handlers = handlers
+	return handleError(C.updateTouchBar(me.context, data))
 }
 
 func (me *touchBar) Uninstall() error {
@@ -73,10 +94,4 @@ func (me *touchBar) Uninstall() error {
 		return fmt.Errorf("touch bar has not been initialized")
 	}
 	return handleError(C.destroyTouchBar(me.context))
-}
-
-func NewTouchBar(options contracts.Options) contracts.TouchBar {
-	return &touchBar{
-		options: options,
-	}
 }

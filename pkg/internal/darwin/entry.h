@@ -8,10 +8,6 @@ typedef enum AttachMode : NSUInteger {
     kDebug
 } AttachMode;
 
-typedef struct TouchBar {
-
-} TouchBar;
-
 typedef struct InitResult {
   void* result;
   const char * err;
@@ -21,9 +17,11 @@ typedef struct ErrorResult2 {
   const char * err;
 } ErrorResult;
 
-InitResult initTouchBar(AttachMode mode, TouchBar data);
+extern void handleEvent(void* me, const char* event);
+
+InitResult initTouchBar(AttachMode mode, const char* data, void* me);
 ErrorResult runDebug(void* context);
-ErrorResult updateTouchBar(void* context, TouchBar data);
+ErrorResult updateTouchBar(void* context, const char* data);
 ErrorResult destroyTouchBar(void* context);
 
 #endif

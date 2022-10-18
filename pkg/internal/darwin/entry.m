@@ -18,9 +18,7 @@ static NSError* setWindowController(NSWindow* window, WindowController* controll
   return nil;
 }
 
-static NSWindow* makeDebugWindow() {
-  NSApplication* app = [NSApplication sharedApplication];
-
+static NSWindow* makeDebugWindow(NSApplication *app) {
   NSWindow* window = [[[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 200, 200) styleMask:NSWindowStyleMaskTitled backing:NSBackingStoreBuffered defer:NO] autorelease];
   [window cascadeTopLeftFromPoint:NSMakePoint(20,20)];
   [window setTitle:@"go-touchbar tester"];
@@ -42,14 +40,16 @@ static NSWindow* makeDebugWindow() {
 
 typedef struct Context {
   AttachMode mode;
+  NSWindow* window;
+  WindowController* controller;
 } Context;
 
-InitResult initTouchBar(AttachMode mode, TouchBar data) {
+InitResult initTouchBar(AttachMode mode, const char * data, void* me) {
   InitResult result;
   result.result = nil;
   result.err = nil;
 
-  WindowController* controller = [[WindowController alloc] init];
+  WindowController* controller = [[WindowController alloc] initWithData:data];
   [controller autorelease];
 
   NSApplication* app = [NSApplication sharedApplication];
@@ -58,7 +58,7 @@ InitResult initTouchBar(AttachMode mode, TouchBar data) {
   if (mode == kMainWindow) {
     window = app.mainWindow;
   } else if (mode == kDebug) {
-    window = makeDebugWindow();
+    window = makeDebugWindow(app);
   } else {
     result.err = [[NSString stringWithFormat:@"Unknown mode %lu", mode] UTF8String];
     return result;
@@ -76,6 +76,9 @@ InitResult initTouchBar(AttachMode mode, TouchBar data) {
     return result;
   }
 
+  context->mode = mode;
+  context->controller = controller;
+  context->window = window;
   result.result = context;
   return result;
 }
@@ -91,9 +94,13 @@ ErrorResult runDebug(void* ctx) {
   return result;
 }
 
-ErrorResult updateTouchBar(void* ctx, TouchBar data) {
+ErrorResult updateTouchBar(void* ctx, const char * data) {
   Context* context = (Context*) ctx;
-  // TODO: implement
+
+  [context->controller setData:data];
+
+  // Force the touchBar to be redrawn
+  context->window.touchBar = nil;
 
   ErrorResult result;
   result.err = nil;
