@@ -6,6 +6,7 @@ import (
 	"unsafe"
 
 	"github.com/LouisBrunner/go-touchbar/pkg/internal/contracts"
+	"github.com/mattn/go-pointer"
 )
 
 //#cgo CFLAGS: -x objective-c -std=c2x
@@ -38,7 +39,7 @@ func handleError(result C.ErrorResult) error {
 
 //export handleEvent
 func handleEvent(raw unsafe.Pointer, event *C.char) {
-	me := (*touchBar)(raw)
+	me := (pointer.Restore(raw)).(*touchBar)
 	me.handleEvent(C.GoString(event))
 }
 
@@ -56,7 +57,7 @@ func (me *touchBar) install(debug bool) error {
 	}
 	defer C.free(unsafe.Pointer(data))
 	me.handlers = handlers
-	result := C.initTouchBar(C.AttachMode(mode), data, unsafe.Pointer(me))
+	result := C.initTouchBar(C.AttachMode(mode), data, pointer.Save(me))
 	if result.err != nil {
 		return transformError(result.err)
 	}

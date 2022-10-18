@@ -2,7 +2,10 @@ module github.com/LouisBrunner/go-touchbar
 
 go 1.18
 
-require honnef.co/go/tools v0.3.3
+require (
+	github.com/mattn/go-pointer v0.0.1
+	honnef.co/go/tools v0.3.3
+)
 
 require (
 	github.com/BurntSushi/toml v0.4.1 // indirect
