@@ -49,8 +49,8 @@ InitResult initTouchBar(AttachMode mode, const char * data, void* me) {
   result.result = nil;
   result.err = nil;
 
-  WindowController* controller = [[WindowController alloc] initWithData:data];
-  [controller autorelease];
+  // TODO: pass a block with handleEvent and me together
+  WindowController* controller = [[[WindowController alloc] initWithData:data] autorelease];
 
   NSApplication* app = [NSApplication sharedApplication];
 

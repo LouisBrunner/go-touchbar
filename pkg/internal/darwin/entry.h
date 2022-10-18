@@ -17,7 +17,7 @@ typedef struct ErrorResult2 {
   const char * err;
 } ErrorResult;
 
-extern void handleEvent(void* me, const char* event);
+extern void handleEvent(void* me, char* event);
 
 InitResult initTouchBar(AttachMode mode, const char* data, void* me);
 ErrorResult runDebug(void* context);

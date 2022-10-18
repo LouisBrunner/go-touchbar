@@ -32,9 +32,13 @@ if err != nil {
 }
 ```
 
+TODO: add an example for the update flow
+
 ### Configuration
 
-TODO: finish
+See [example application](./examples/tester/main.go) for a real-life example.
+
+TODO: more details + godocs
 
 ## Further work
 
@@ -42,9 +46,11 @@ TODO: finish
 - Allow more options (check TODOs)
 - Thread-safety
 - Support custom images
+- Better documentation
+- Make a catalog like [Apple's](https://developer.apple.com/documentation/appkit/touch_bar/creating_and_customizing_the_touch_bar?language=objc)
 
 ## Acknowledgements
 
 This library's API was influenced by [Electron's](https://www.electronjs.org/docs/latest/api/touch-bar).
 
-The [testing application](./examples/tester) is a reimplementation of [`electron-touch-bar`](https://github.com/pahund/electron-touch-bar).
+The [example application](./examples/tester) is a reimplementation of [`electron-touch-bar`](https://github.com/pahund/electron-touch-bar).

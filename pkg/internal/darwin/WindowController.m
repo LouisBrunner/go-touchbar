@@ -29,11 +29,13 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
 }
 
 - (void)setData:(const char *)data {
+  // TODO: parse data
   self.data2 = [NSString stringWithCString:data encoding:NSUTF8StringEncoding];;
 }
 
 - (NSTouchBar*)makeTouchBar {
   NSMutableArray *items = [[NSMutableArray alloc]init];
+  // TODO: use data
   [items addObject:prefixLabel];
   [items addObject:NSTouchBarItemIdentifierOtherItemsProxy];
   NSTouchBar* bar = [[NSTouchBar alloc] init];
@@ -43,6 +45,7 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
 }
 
 - (nullable NSTouchBarItem *)touchBar:(NSTouchBar *)touchBar makeItemForIdentifier:(NSTouchBarItemIdentifier)identifier {
+  // TODO: use data
   if ([identifier hasPrefix:prefixLabel]) {
     NSCustomTouchBarItem* item = [[[NSCustomTouchBarItem alloc] initWithIdentifier:identifier] autorelease];
 

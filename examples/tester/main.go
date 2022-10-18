@@ -8,6 +8,7 @@ func main() {
 	tb := touchbar.New(touchbar.Options{
 		Configuration: touchbar.Configuration{
 			Items: touchbar.Items{
+				// TODO: actually implement a useful example
 				&touchbar.Label{},
 			},
 		},

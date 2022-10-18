@@ -1,5 +1,5 @@
 package contracts
 
 type View struct {
-	// TODO:
+	// TODO: finish
 }
