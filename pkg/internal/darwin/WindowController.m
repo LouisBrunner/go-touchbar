@@ -2,7 +2,9 @@
 
 @interface WindowController () <NSTouchBarDelegate>
 @property void (^handler)(char *);
-@property NSString* data2;
+@property NSDictionary* goData;
+@property NSDictionary* identifierMapping;
+@property NSDictionary* imageMapping;
 @end
 
 @implementation WindowController
@@ -43,6 +45,7 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
     }
     return nil;
   }
+  [self initMapping];
   return self;
 }
 
@@ -55,32 +58,179 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
   return nil;
 }
 
-- (NSError*)setData:(const char *)data {
-  // TODO: parse data
-  self.data2 = [NSString stringWithCString:data encoding:NSUTF8StringEncoding];
+- (NSError*)setData:(const char *)rawData {
+  NSData* data = [NSData dataWithBytes:(const void *)rawData length:sizeof(unsigned char) * strlen(rawData)];
+
+  NSError* error = nil;
+  self.goData = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
+  if (error != nil) {
+    return error;
+  }
   return nil;
 }
 
 - (NSTouchBar*)makeTouchBar {
-  NSMutableArray *items = [[NSMutableArray alloc]init];
-  // TODO: use data
-  [items addObject:prefixLabel];
-  [items addObject:NSTouchBarItemIdentifierOtherItemsProxy];
   NSTouchBar* bar = [[NSTouchBar alloc] init];
+
+  NSMutableArray* defaults = [[NSMutableArray alloc] init];
+  [defaults setArray:[self.goData objectForKey:@"Default"]];
+  if ([[self.goData objectForKey:@"OtherItemsProxy"] intValue] == 1) {
+    [defaults addObject:NSTouchBarItemIdentifierOtherItemsProxy];
+  }
+
+  for (int i = 0; i < [defaults count]; ++i) {
+    NSTouchBarItemIdentifier newIdentifier = [self transformIdentifier:[defaults objectAtIndex:i]];
+    if (newIdentifier != nil) {
+      [defaults replaceObjectAtIndex:i withObject:newIdentifier];
+    }
+  }
+
   [bar setDelegate:self];
-  [bar setDefaultItemIdentifiers:items];
+  [bar setDefaultItemIdentifiers:defaults];
+  [bar setPrincipalItemIdentifier:[self transformIdentifier:[self.goData objectForKey:@"Principal"]]];
+  [bar setEscapeKeyReplacementItemIdentifier:[self transformIdentifier:[self.goData objectForKey:@"Escape"]]];
   return bar;
 }
 
 - (nullable NSTouchBarItem *)touchBar:(NSTouchBar *)touchBar makeItemForIdentifier:(NSTouchBarItemIdentifier)identifier {
-  // TODO: use data
+  // TODO: finish
   if ([identifier hasPrefix:prefixLabel]) {
+    NSDictionary* data = [[self.goData objectForKey:@"Items"] objectForKey:identifier];
     NSCustomTouchBarItem* item = [[[NSCustomTouchBarItem alloc] initWithIdentifier:identifier] autorelease];
-
-    NSTextField* view = [NSTextField labelWithString:self.data2];
-    [item setView:view];
+    [self updateWidgetLabel:item withData:data];
     return item;
   }
   return nil;
+}
+
+- (void)updateWidgetCore:(NSCustomTouchBarItem*)item withData:(NSDictionary*)data {
+  item.visibilityPriority = [[data objectForKey:@"Priority"] floatValue] == 0;
+}
+
+- (void)updateWidgetLabel:(NSCustomTouchBarItem*)item withData:(NSDictionary*)data {
+  [self updateWidgetCore:item withData:data];
+
+  NSString* text = [data valueForKeyPath:@"Content.Text"];
+  NSString* image = [data valueForKeyPath:@"Content.Image"];
+  if (text != nil) {
+    NSTextField* view = [NSTextField labelWithString:text];
+    [item setView:view];
+  } else if (image != nil) {
+    NSImageView* view = [[NSImageView alloc] init];
+    NSImageName imageName = [self transformImage:image];
+    if (imageName != nil) {
+      view.image = [NSImage imageNamed:imageName];
+    } else {
+      view.image = [NSImage imageWithSystemSymbolName:image accessibilityDescription:image];
+    }
+    [item setView:view];
+  }
+}
+
+- (NSTouchBarItemIdentifier) transformIdentifier:(NSString*) name {
+  NSTouchBarItemIdentifier standard = [self.identifierMapping objectForKey:name];
+  if (standard != nil) {
+    return standard;
+  }
+  return name;
+}
+
+- (nullable NSImageName) transformImage:(NSString*)name {
+  NSImageName standard = [self.imageMapping objectForKey:name];
+  if (standard == nil) {
+    return nil;
+  }
+  return standard;
+}
+
+- (void) initMapping {
+  _identifierMapping = @{
+    standardSpaceSmall: NSTouchBarItemIdentifierFixedSpaceSmall,
+    standardSpaceLarge: NSTouchBarItemIdentifierFixedSpaceLarge,
+    standardSpaceFlexible: NSTouchBarItemIdentifierFlexibleSpace,
+    standardCandidateList: NSTouchBarItemIdentifierCandidateList,
+    standardCharacterPicker: NSTouchBarItemIdentifierCharacterPicker,
+    standardTextFormat: NSTouchBarItemIdentifierTextFormat,
+    standardTextAlignment: NSTouchBarItemIdentifierTextAlignment,
+    standardTextColorPicker: NSTouchBarItemIdentifierTextColorPicker,
+    standardTextList: NSTouchBarItemIdentifierTextList,
+    standardTextStyle: NSTouchBarItemIdentifierTextStyle,
+  };
+  _imageMapping = @{
+    @"TBAddDetailTemplate": NSImageNameTouchBarAddDetailTemplate,
+    @"TBAddTemplate": NSImageNameTouchBarAddTemplate,
+    @"TBAlarmTemplate": NSImageNameTouchBarAlarmTemplate,
+    @"TBAudioInputMuteTemplate": NSImageNameTouchBarAudioInputMuteTemplate,
+    @"TBAudioInputTemplate": NSImageNameTouchBarAudioInputTemplate,
+    @"TBAudioOutputMuteTemplate": NSImageNameTouchBarAudioOutputMuteTemplate,
+    @"TBAudioOutputVolumeHighTemplate": NSImageNameTouchBarAudioOutputVolumeHighTemplate,
+    @"TBAudioOutputVolumeLowTemplate": NSImageNameTouchBarAudioOutputVolumeLowTemplate,
+    @"TBAudioOutputVolumeMediumTemplate": NSImageNameTouchBarAudioOutputVolumeMediumTemplate,
+    @"TBAudioOutputVolumeOffTemplate": NSImageNameTouchBarAudioOutputVolumeOffTemplate,
+    @"TBBookmarksTemplate": NSImageNameTouchBarBookmarksTemplate,
+    @"TBColorPickerFill": NSImageNameTouchBarColorPickerFill,
+    @"TBColorPickerFont": NSImageNameTouchBarColorPickerFont,
+    @"TBColorPickerStroke": NSImageNameTouchBarColorPickerStroke,
+    @"TBCommunicationAudioTemplate": NSImageNameTouchBarCommunicationAudioTemplate,
+    @"TBCommunicationVideoTemplate": NSImageNameTouchBarCommunicationVideoTemplate,
+    @"TBComposeTemplate": NSImageNameTouchBarComposeTemplate,
+    @"TBDeleteTemplate": NSImageNameTouchBarDeleteTemplate,
+    @"TBDownloadTemplate": NSImageNameTouchBarDownloadTemplate,
+    @"TBEnterFullScreenTemplate": NSImageNameTouchBarEnterFullScreenTemplate,
+    @"TBExitFullScreenTemplate": NSImageNameTouchBarExitFullScreenTemplate,
+    @"TBFastForwardTemplate": NSImageNameTouchBarFastForwardTemplate,
+    @"TBFolderCopyToTemplate": NSImageNameTouchBarFolderCopyToTemplate,
+    @"TBFolderMoveToTemplate": NSImageNameTouchBarFolderMoveToTemplate,
+    @"TBFolderTemplate": NSImageNameTouchBarFolderTemplate,
+    @"TBGetInfoTemplate": NSImageNameTouchBarGetInfoTemplate,
+    @"TBGoBackTemplate": NSImageNameTouchBarGoBackTemplate,
+    @"TBGoDownTemplate": NSImageNameTouchBarGoDownTemplate,
+    @"TBGoForwardTemplate": NSImageNameTouchBarGoForwardTemplate,
+    @"TBGoUpTemplate": NSImageNameTouchBarGoUpTemplate,
+    @"TBHistoryTemplate": NSImageNameTouchBarHistoryTemplate,
+    @"TBIconViewTemplate": NSImageNameTouchBarIconViewTemplate,
+    @"TBListViewTemplate": NSImageNameTouchBarListViewTemplate,
+    @"TBMailTemplate": NSImageNameTouchBarMailTemplate,
+    @"TBNewFolderTemplate": NSImageNameTouchBarNewFolderTemplate,
+    @"TBNewMessageTemplate": NSImageNameTouchBarNewMessageTemplate,
+    @"TBOpenInBrowserTemplate": NSImageNameTouchBarOpenInBrowserTemplate,
+    @"TBPauseTemplate": NSImageNameTouchBarPauseTemplate,
+    @"TBPlayheadTemplate": NSImageNameTouchBarPlayheadTemplate,
+    @"TBPlayPauseTemplate": NSImageNameTouchBarPlayPauseTemplate,
+    @"TBPlayTemplate": NSImageNameTouchBarPlayTemplate,
+    @"TBQuickLookTemplate": NSImageNameTouchBarQuickLookTemplate,
+    @"TBRecordStartTemplate": NSImageNameTouchBarRecordStartTemplate,
+    @"TBRecordStopTemplate": NSImageNameTouchBarRecordStopTemplate,
+    @"TBRefreshTemplate": NSImageNameTouchBarRefreshTemplate,
+    @"TBRewindTemplate": NSImageNameTouchBarRewindTemplate,
+    @"TBRotateLeftTemplate": NSImageNameTouchBarRotateLeftTemplate,
+    @"TBRotateRightTemplate": NSImageNameTouchBarRotateRightTemplate,
+    @"TBSearchTemplate": NSImageNameTouchBarSearchTemplate,
+    @"TBShareTemplate": NSImageNameTouchBarShareTemplate,
+    @"TBSidebarTemplate": NSImageNameTouchBarSidebarTemplate,
+    @"TBSkipAhead15SecondsTemplate": NSImageNameTouchBarSkipAhead15SecondsTemplate,
+    @"TBSkipAhead30SecondsTemplate": NSImageNameTouchBarSkipAhead30SecondsTemplate,
+    @"TBSkipAheadTemplate": NSImageNameTouchBarSkipAheadTemplate,
+    @"TBSkipBack15SecondsTemplate": NSImageNameTouchBarSkipBack15SecondsTemplate,
+    @"TBSkipBack30SecondsTemplate": NSImageNameTouchBarSkipBack30SecondsTemplate,
+    @"TBSkipBackTemplate": NSImageNameTouchBarSkipBackTemplate,
+    @"TBSkipToEndTemplate": NSImageNameTouchBarSkipToEndTemplate,
+    @"TBSkipToStartTemplate": NSImageNameTouchBarSkipToStartTemplate,
+    @"TBSlideshowTemplate": NSImageNameTouchBarSlideshowTemplate,
+    @"TBTagIconTemplate": NSImageNameTouchBarTagIconTemplate,
+    @"TBTextBoldTemplate": NSImageNameTouchBarTextBoldTemplate,
+    @"TBTextBoxTemplate": NSImageNameTouchBarTextBoxTemplate,
+    @"TBTextCenterAlignTemplate": NSImageNameTouchBarTextCenterAlignTemplate,
+    @"TBTextItalicTemplate": NSImageNameTouchBarTextItalicTemplate,
+    @"TBTextJustifiedAlignTemplate": NSImageNameTouchBarTextJustifiedAlignTemplate,
+    @"TBTextLeftAlignTemplate": NSImageNameTouchBarTextLeftAlignTemplate,
+    @"TBTextListTemplate": NSImageNameTouchBarTextListTemplate,
+    @"TBTextRightAlignTemplate": NSImageNameTouchBarTextRightAlignTemplate,
+    @"TBTextStrikethroughTemplate": NSImageNameTouchBarTextStrikethroughTemplate,
+    @"TBTextUnderlineTemplate": NSImageNameTouchBarTextUnderlineTemplate,
+    @"TBUserAddTemplate": NSImageNameTouchBarUserAddTemplate,
+    @"TBUserGroupTemplate": NSImageNameTouchBarUserGroupTemplate,
+    @"TBUserTemplate": NSImageNameTouchBarUserTemplate,
+  };
 }
 @end

@@ -11,6 +11,11 @@ func main() {
 			Items: []barbuilder.Item{
 				// TODO: actually implement a useful example
 				&barbuilder.Label{
+					Content: &barbuilder.ContentImage{
+						Image: barbuilder.TBAddTemplate,
+					},
+				},
+				&barbuilder.Label{
 					CommonProperties: barbuilder.CommonProperties{
 						Principal: true,
 					},
@@ -18,9 +23,10 @@ func main() {
 						Text: "Hello",
 					},
 				},
+				&barbuilder.SpaceFlexible{},
 				&barbuilder.Label{
 					Content: &barbuilder.ContentImage{
-						Image: barbuilder.SFSymbol("l.joystick.tilt.left.fill"),
+						Image: barbuilder.SFSymbol("hammer"),
 					},
 				},
 			},

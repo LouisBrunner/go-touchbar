@@ -13,7 +13,6 @@ const (
 )
 
 type CommonProperties struct {
-	Visible   bool
 	Priority  ItemPriority
 	Principal bool
 }
