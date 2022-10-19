@@ -1,10 +1,22 @@
 #import "WindowController.h"
 
 @interface WindowController () <NSTouchBarDelegate>
+@property void (^handler)(char *);
 @property NSString* data2;
 @end
 
 @implementation WindowController
+static NSTouchBarItemIdentifier standardSpaceSmall = @"net.lbrunner.touchbar.small_space";
+static NSTouchBarItemIdentifier standardSpaceLarge = @"net.lbrunner.touchbar.large_space";
+static NSTouchBarItemIdentifier standardSpaceFlexible = @"net.lbrunner.touchbar.flexible_space";
+static NSTouchBarItemIdentifier standardCandidateList = @"net.lbrunner.touchbar.candidates";
+static NSTouchBarItemIdentifier standardCharacterPicker = @"net.lbrunner.touchbar.char_picker";
+static NSTouchBarItemIdentifier standardTextFormat = @"net.lbrunner.touchbar.text_format";
+static NSTouchBarItemIdentifier standardTextAlignment = @"net.lbrunner.touchbar.text_align";
+static NSTouchBarItemIdentifier standardTextColorPicker = @"net.lbrunner.touchbar.text_color";
+static NSTouchBarItemIdentifier standardTextList = @"net.lbrunner.touchbar.text_list";
+static NSTouchBarItemIdentifier standardTextStyle = @"net.lbrunner.touchbar.text_style";
+
 static NSTouchBarItemIdentifier prefixButton = @"net.lbrunner.touchbar.button.";
 static NSTouchBarItemIdentifier prefixCandidates = @"net.lbrunner.touchbar.candidates.";
 static NSTouchBarItemIdentifier prefixColorpicker = @"net.lbrunner.touchbar.colorpicker.";
@@ -17,20 +29,36 @@ static NSTouchBarItemIdentifier prefixScrubber = @"net.lbrunner.touchbar.scrubbe
 static NSTouchBarItemIdentifier prefixSegmented = @"net.lbrunner.touchbar.segmented.";
 static NSTouchBarItemIdentifier prefixSharer = @"net.lbrunner.touchbar.sharer.";
 static NSTouchBarItemIdentifier prefixSlider = @"net.lbrunner.touchbar.slider.";
-static NSTouchBarItemIdentifier prefixSpacer = @"net.lbrunner.touchbar.spacer.";
 static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.";
 
-- (id)initWithData:(const char *)data {
+- (id)initWithData:(const char *)data andHandler:(void (^)(char *))handler error:(NSError**)error {
   if ((self = [WindowController alloc]) == nil) {
     return nil;
   }
-  [self setData:data];
+  _handler = handler;
+  NSError* err = [self setData:data];
+  if (err != nil) {
+    if (error != nil) {
+      *error = err;
+    }
+    return nil;
+  }
   return self;
 }
 
-- (void)setData:(const char *)data {
+- (NSError*)updateWithData:(const char *)data {
+  NSError* err = [self setData:data];
+  if (err != nil) {
+    return err;
+  }
+  // TODO: update code
+  return nil;
+}
+
+- (NSError*)setData:(const char *)data {
   // TODO: parse data
-  self.data2 = [NSString stringWithCString:data encoding:NSUTF8StringEncoding];;
+  self.data2 = [NSString stringWithCString:data encoding:NSUTF8StringEncoding];
+  return nil;
 }
 
 - (NSTouchBar*)makeTouchBar {

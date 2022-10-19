@@ -49,8 +49,20 @@ InitResult initTouchBar(AttachMode mode, const char * data, void* me) {
   result.result = nil;
   result.err = nil;
 
-  // TODO: pass a block with handleEvent and me together
-  WindowController* controller = [[[WindowController alloc] initWithData:data] autorelease];
+  void (^handler)(char *) = ^void(char * event) {
+    handleEvent(me, event);
+  };
+
+  NSError* err = nil;
+  WindowController* controller = [[[WindowController alloc] initWithData:data andHandler:handler error:&err] autorelease];
+  if (controller == nil) {
+    if (err != nil) {
+      result.err = [[err localizedDescription] UTF8String];
+    } else {
+      result.err = "unknown init error for controller";
+    }
+    return result;
+  }
 
   NSApplication* app = [NSApplication sharedApplication];
 
@@ -64,7 +76,7 @@ InitResult initTouchBar(AttachMode mode, const char * data, void* me) {
     return result;
   }
 
-  NSError* err = setWindowController(window, controller);
+  err = setWindowController(window, controller);
   if (err != nil) {
     result.err = [[err localizedDescription] UTF8String];
     return result;
@@ -97,13 +109,14 @@ ErrorResult runDebug(void* ctx) {
 ErrorResult updateTouchBar(void* ctx, const char * data) {
   Context* context = (Context*) ctx;
 
-  [context->controller setData:data];
-
-  // Force the touchBar to be redrawn
-  context->window.touchBar = nil;
-
   ErrorResult result;
   result.err = nil;
+
+  NSError* err = [context->controller updateWithData:data];
+  if (err != nil) {
+    result.err = [[err localizedDescription] UTF8String];
+  }
+
   return result;
 }
 

@@ -50,7 +50,7 @@ const (
 )
 
 func makeID(prefix, kind string, i int) string {
-	return fmt.Sprintf("%s.%s.%s.%d", namespace, prefix, kind, i)
+	return fmt.Sprintf("%s.%s.%s.%d", namespace, kind, prefix, i)
 }
 
 func processItem(prefix string, i int, item barbuilder.Item, principal *string, dict map[string]item, handlers *handlers) (string, interface{}, error) {
@@ -242,7 +242,7 @@ func processConfig(config *barbuilder.Configuration) (*flatConfig, *handlers, er
 		steppers:     make(map[string]barbuilder.StepperOnChange),
 	}
 
-	list, principal, err := processItems("", config.Items, dict, &handlers)
+	list, principal, err := processItems("root", config.Items, dict, &handlers)
 	if err != nil {
 		return nil, nil, err
 	}
