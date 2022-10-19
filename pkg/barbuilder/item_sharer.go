@@ -5,7 +5,7 @@ type Sharer struct {
 
 	ButtonImage Image
 	ButtonLabel string
-	Enabled     bool
+	Disabled    bool
 
 	// TODO: needs delegate or something?
 }

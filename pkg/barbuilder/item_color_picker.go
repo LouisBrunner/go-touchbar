@@ -20,7 +20,7 @@ type ColorPicker struct {
 
 	Kind       ColorPickerKind
 	ShowsAlpha bool
-	Enabled    bool
+	Disabled   bool
 	OnSelected ColorPickerOnSelected
 
 	// TODO: custom color list

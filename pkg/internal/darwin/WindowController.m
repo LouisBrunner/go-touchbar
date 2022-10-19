@@ -1,7 +1,7 @@
 #import "WindowController.h"
 
 @interface WindowController () <NSTouchBarDelegate>
-@property void (^handler)(char *);
+@property (copy) void (^handler)(char *);
 @property NSDictionary* goData;
 @property NSDictionary* identifierMapping;
 @property NSDictionary* imageMapping;
@@ -37,7 +37,7 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
   if ((self = [WindowController alloc]) == nil) {
     return nil;
   }
-  _handler = handler;
+  self.handler = handler;
   NSError* err = [self setData:data];
   if (err != nil) {
     if (error != nil) {
@@ -94,17 +94,40 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
 
 - (nullable NSTouchBarItem *)touchBar:(NSTouchBar *)touchBar makeItemForIdentifier:(NSTouchBarItemIdentifier)identifier {
   // TODO: finish
-  if ([identifier hasPrefix:prefixLabel]) {
-    NSDictionary* data = [[self.goData objectForKey:@"Items"] objectForKey:identifier];
+  NSDictionary* data = [[self.goData objectForKey:@"Items"] objectForKey:identifier];
+  if ([identifier hasPrefix:prefixButton]) {
+    NSButtonTouchBarItem* item = [[[NSButtonTouchBarItem alloc] initWithIdentifier:identifier] autorelease];
+    [self updateWidgetButton:item withData:data];
+    return item;
+  } else if ([identifier hasPrefix:prefixLabel]) {
     NSCustomTouchBarItem* item = [[[NSCustomTouchBarItem alloc] initWithIdentifier:identifier] autorelease];
     [self updateWidgetLabel:item withData:data];
     return item;
+  } else {
+    NSLog(@"warning: unsupported identifier %@ with %@", identifier, data);
   }
   return nil;
 }
 
-- (void)updateWidgetCore:(NSCustomTouchBarItem*)item withData:(NSDictionary*)data {
+- (void)updateWidgetCore:(NSTouchBarItem*)item withData:(NSDictionary*)data {
   item.visibilityPriority = [[data objectForKey:@"Priority"] floatValue] == 0;
+}
+
+- (void)updateWidgetButton:(NSButtonTouchBarItem*)item withData:(NSDictionary*)data {
+  [self updateWidgetCore:item withData:data];
+
+  item.title = [data valueForKeyPath:@"Title"];
+  item.image = [self transformImage:[data valueForKeyPath:@"Image"]];
+  item.target = self;
+  item.action = @selector(buttonAction:);
+  item.enabled = [[data valueForKeyPath:@"Disabled"] intValue] == 0;
+  item.bezelColor = [self transformColor:[data valueForKeyPath:@"BezelColor"]];
+}
+
+- (void)buttonAction:(id)sender {
+  NSString* identifier = ((NSButtonTouchBarItem*) sender).identifier;
+  const char * event = [[NSString stringWithFormat:@"{\"Kind\":\"button\",\"Target\":\"%@\"}", identifier] UTF8String];
+  self.handler((char*) event);
 }
 
 - (void)updateWidgetLabel:(NSCustomTouchBarItem*)item withData:(NSDictionary*)data {
@@ -117,13 +140,10 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
     [item setView:view];
   } else if (image != nil) {
     NSImageView* view = [[NSImageView alloc] init];
-    NSImageName imageName = [self transformImage:image];
-    if (imageName != nil) {
-      view.image = [NSImage imageNamed:imageName];
-    } else {
-      view.image = [NSImage imageWithSystemSymbolName:image accessibilityDescription:image];
-    }
+    view.image = [self transformImage:image];
     [item setView:view];
+  } else {
+    NSLog(@"warning: label with invalid data %@", data);
   }
 }
 
@@ -135,16 +155,37 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
   return name;
 }
 
-- (nullable NSImageName) transformImage:(NSString*)name {
-  NSImageName standard = [self.imageMapping objectForKey:name];
-  if (standard == nil) {
+- (NSImage*) transformImage:(NSString*)name {
+  if (name == nil) {
     return nil;
   }
-  return standard;
+  NSImageName standard = [self.imageMapping objectForKey:name];
+  if (standard != nil) {
+    return [NSImage imageNamed:standard];
+  }
+  NSImage* sf = [NSImage imageWithSystemSymbolName:name accessibilityDescription:name];
+  if (sf == nil) {
+    NSLog(@"warning: could not find SF Symbols for %@", name);
+  }
+  return sf;
+}
+
+- (NSColor*) transformColor:(NSString*)name {
+  if (name == nil) {
+    return nil;
+  }
+  // TODO: wrong, use a mapping to
+  // https://developer.apple.com/documentation/appkit/nscolor/standard_colors?changes=_5&language=objc
+  // instead
+  NSColor* standard = [NSColor colorNamed:name];
+  if (standard != nil) {
+    return standard;
+  }
+  return nil;
 }
 
 - (void) initMapping {
-  _identifierMapping = @{
+  self.identifierMapping = @{
     standardSpaceSmall: NSTouchBarItemIdentifierFixedSpaceSmall,
     standardSpaceLarge: NSTouchBarItemIdentifierFixedSpaceLarge,
     standardSpaceFlexible: NSTouchBarItemIdentifierFlexibleSpace,
@@ -156,7 +197,7 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
     standardTextList: NSTouchBarItemIdentifierTextList,
     standardTextStyle: NSTouchBarItemIdentifierTextStyle,
   };
-  _imageMapping = @{
+  self.imageMapping = @{
     @"TBAddDetailTemplate": NSImageNameTouchBarAddDetailTemplate,
     @"TBAddTemplate": NSImageNameTouchBarAddTemplate,
     @"TBAlarmTemplate": NSImageNameTouchBarAlarmTemplate,

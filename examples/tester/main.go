@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	touchbar "github.com/LouisBrunner/go-touchbar/pkg"
 	"github.com/LouisBrunner/go-touchbar/pkg/barbuilder"
 )
@@ -13,6 +15,14 @@ func main() {
 				&barbuilder.Label{
 					Content: &barbuilder.ContentImage{
 						Image: barbuilder.TBAddTemplate,
+					},
+				},
+				&barbuilder.Button{
+					Title:      "Hello",
+					Image:      barbuilder.SFSymbol("greaterthan.circle"),
+					BezelColor: barbuilder.Color("blue"),
+					OnClick: func() {
+						fmt.Printf("done\n")
 					},
 				},
 				&barbuilder.Label{

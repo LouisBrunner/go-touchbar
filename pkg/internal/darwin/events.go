@@ -8,14 +8,14 @@ import (
 )
 
 type handlers struct {
-	buttons      map[string]barbuilder.ButtonOnClick
-	colorPickers map[string]barbuilder.ColorPickerOnSelected
-	customs      map[string]barbuilder.CustomOnEvent
-	pickers      map[string]barbuilder.PickerOnSelected
-	scrubbers    map[string]barbuilder.ScrubberOnChange
-	segments     map[string]barbuilder.SegmentedOnChange
-	sliders      map[string]barbuilder.SliderOnChange
-	steppers     map[string]barbuilder.StepperOnChange
+	buttons      map[identifier]barbuilder.ButtonOnClick
+	colorPickers map[identifier]barbuilder.ColorPickerOnSelected
+	customs      map[identifier]barbuilder.CustomOnEvent
+	pickers      map[identifier]barbuilder.PickerOnSelected
+	scrubbers    map[identifier]barbuilder.ScrubberOnChange
+	segments     map[identifier]barbuilder.SegmentedOnChange
+	sliders      map[identifier]barbuilder.SliderOnChange
+	steppers     map[identifier]barbuilder.StepperOnChange
 }
 
 const (
@@ -31,7 +31,7 @@ const (
 
 type event struct {
 	Kind   string
-	Target string
+	Target identifier
 	Data   json.RawMessage
 }
 
