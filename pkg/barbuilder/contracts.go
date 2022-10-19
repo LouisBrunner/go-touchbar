@@ -1,4 +1,4 @@
-package contracts
+package barbuilder
 
 type TouchBar interface {
 	Install() error
@@ -15,6 +15,7 @@ type Options struct {
 }
 
 type Configuration struct {
-	Items  Items
-	Escape *item
+	Items           []Item
+	Escape          *Item
+	OtherItemsProxy bool
 }

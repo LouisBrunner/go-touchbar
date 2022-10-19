@@ -1,11 +1,19 @@
-package contracts
+package barbuilder
+
+type Image interface {
+	isAnImage()
+}
 
 // See https://developer.apple.com/sf-symbols/ for full list
 type SFSymbol string
 
+func (me SFSymbol) isAnImage() {}
+
 // See https://developer.apple.com/design/human-interface-guidelines/inputs/touch-bar/#interface-icons
 // for mapping to SFSymbol
 type TBSymbol string
+
+func (me TBSymbol) isAnImage() {}
 
 const (
 	TBAddDetailTemplate               TBSymbol = "TBAddDetailTemplate"

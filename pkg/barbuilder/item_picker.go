@@ -1,4 +1,4 @@
-package contracts
+package barbuilder
 
 type PickerOnSelected func(i int)
 

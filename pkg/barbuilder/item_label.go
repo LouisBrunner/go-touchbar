@@ -1,10 +1,11 @@
-package contracts
+package barbuilder
 
 type Label struct {
 	CommonProperties
-	View
 
-	// TODO: finish
+	Content View
+
+	// TODO: loads of options
 }
 
 func (me *Label) isAnItem() {}

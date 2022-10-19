@@ -42,8 +42,8 @@ TODO: more details + godocs
 
 ## Further work
 
-- Allow user customization
-- Allow more options (check TODOs)
+- Allow user customization (`customizationLabel`, `templateItems`, etc)
+- Allow more options (check TODOs, layout constraints, custom color/styling, etc)
 - Thread-safety
 - Support custom images
 - Better documentation

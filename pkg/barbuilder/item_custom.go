@@ -1,4 +1,4 @@
-package contracts
+package barbuilder
 
 type CustomEventKind string
 

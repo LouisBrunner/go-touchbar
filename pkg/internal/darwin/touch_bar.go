@@ -3,16 +3,16 @@ package darwin
 import (
 	"unsafe"
 
-	"github.com/LouisBrunner/go-touchbar/pkg/internal/contracts"
+	"github.com/LouisBrunner/go-touchbar/pkg/barbuilder"
 )
 
 type touchBar struct {
-	options  contracts.Options
+	options  barbuilder.Options
 	handlers *handlers
 	context  unsafe.Pointer
 }
 
-func NewTouchBar(options contracts.Options) contracts.TouchBar {
+func NewTouchBar(options barbuilder.Options) barbuilder.TouchBar {
 	return &touchBar{
 		options: options,
 	}

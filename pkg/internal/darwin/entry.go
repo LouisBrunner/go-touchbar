@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"unsafe"
 
-	"github.com/LouisBrunner/go-touchbar/pkg/internal/contracts"
+	"github.com/LouisBrunner/go-touchbar/pkg/barbuilder"
 	"github.com/mattn/go-pointer"
 )
 
@@ -14,7 +14,7 @@ import (
 //#include "entry.h"
 import "C"
 
-func serializeConfig(config *contracts.Configuration) (*C.char, *handlers, error) {
+func serializeConfig(config *barbuilder.Configuration) (*C.char, *handlers, error) {
 	data, handlers, err := processConfig(config)
 	if err != nil {
 		return nil, nil, err
@@ -77,7 +77,7 @@ func (me *touchBar) Debug() error {
 	return handleError(C.runDebug(me.context))
 }
 
-func (me *touchBar) Update(configuration contracts.Configuration) error {
+func (me *touchBar) Update(configuration barbuilder.Configuration) error {
 	if me.context == nil {
 		return fmt.Errorf("touch bar has not been initialized")
 	}

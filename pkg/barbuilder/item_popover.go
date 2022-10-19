@@ -1,10 +1,10 @@
-package contracts
+package barbuilder
 
 type Popover struct {
 	CommonProperties
 
 	Collapsed       View
-	Bar             Items
+	Bar             []Item
 	ShowCloseButton bool
 	PressAndHold    bool
 }

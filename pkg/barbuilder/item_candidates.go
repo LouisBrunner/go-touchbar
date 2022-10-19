@@ -1,4 +1,4 @@
-package contracts
+package barbuilder
 
 type Candidates struct {
 	CommonProperties
@@ -8,7 +8,7 @@ type Candidates struct {
 	ForRange   [2]int
 
 	AllowsCollapsing                 bool
-	Collapsed                        bool
+	StartsCollapsed                  bool
 	Visible                          bool
 	AllowsTextInputContextCandidates bool
 }

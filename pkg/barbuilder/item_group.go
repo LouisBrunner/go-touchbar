@@ -1,4 +1,4 @@
-package contracts
+package barbuilder
 
 type GroupDirection string
 
@@ -12,7 +12,7 @@ type Group struct {
 	CommonProperties
 
 	Direction          GroupDirection
-	Children           Items
+	Children           []Item
 	PrefersEqualWidth  bool
 	PreferredItemWidth float32 // only used when PrefersEqualWidth is true
 

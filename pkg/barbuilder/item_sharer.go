@@ -1,9 +1,9 @@
-package contracts
+package barbuilder
 
 type Sharer struct {
 	CommonProperties
 
-	ButtonImage string
+	ButtonImage Image
 	ButtonLabel string
 	Enabled     bool
 
