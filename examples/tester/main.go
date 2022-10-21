@@ -18,9 +18,14 @@ func main() {
 					},
 				},
 				&barbuilder.Button{
-					Title:      "Hello",
-					Image:      barbuilder.SFSymbol("greaterthan.circle"),
-					BezelColor: barbuilder.Color("blue"),
+					Title: "Hello",
+					Image: barbuilder.SFSymbol("greaterthan.circle"),
+					BezelColor: &barbuilder.RGBAColor{
+						Red:   1.0,
+						Green: 0.5,
+						Blue:  0.2,
+						Alpha: 1.0,
+					},
 					OnClick: func() {
 						fmt.Printf("done\n")
 					},
@@ -31,6 +36,12 @@ func main() {
 					},
 					Content: &barbuilder.ContentLabel{
 						Text: "Hello",
+						Color: &barbuilder.RGBAColor{
+							Red:   0.3,
+							Green: 1.0,
+							Blue:  0.1,
+							Alpha: 0.7,
+						},
 					},
 				},
 				&barbuilder.SpaceFlexible{},

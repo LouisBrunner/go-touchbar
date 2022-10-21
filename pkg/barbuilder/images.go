@@ -5,6 +5,7 @@ type Image interface {
 }
 
 // See https://developer.apple.com/sf-symbols/ for full list
+// FIXME: would be nice to have some kind of validation
 type SFSymbol string
 
 func (me SFSymbol) isAnImage() {}

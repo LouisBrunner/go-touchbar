@@ -12,4 +12,6 @@ type Button struct {
 	OnClick    ButtonOnClick
 }
 
+var _ Item = &Button{}
+
 func (me *Button) isAnItem() {}

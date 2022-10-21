@@ -19,4 +19,6 @@ type Group struct {
 	// TODO: missing compression settings
 }
 
+var _ Item = &Group{}
+
 func (me *Group) isAnItem() {}

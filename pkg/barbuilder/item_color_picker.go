@@ -9,8 +9,7 @@ const (
 )
 
 type ColorPickerColor struct {
-	RGB   string
-	Alpha float32
+	RGB RGBAColor
 }
 
 type ColorPickerOnSelected func(color ColorPickerColor)
@@ -26,5 +25,7 @@ type ColorPicker struct {
 	// TODO: custom color list
 	// TODO: custom color spaces
 }
+
+var _ Item = &ColorPicker{}
 
 func (me *ColorPicker) isAnItem() {}

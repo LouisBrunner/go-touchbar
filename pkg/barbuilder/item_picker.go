@@ -11,4 +11,6 @@ type Picker struct {
 	OnSelected      PickerOnSelected
 }
 
+var _ Item = &Picker{}
+
 func (me *Picker) isAnItem() {}

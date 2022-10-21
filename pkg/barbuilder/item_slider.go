@@ -22,4 +22,6 @@ type Slider struct {
 	OnChange         SliderOnChange
 }
 
+var _ Item = &Slider{}
+
 func (me *Slider) isAnItem() {}

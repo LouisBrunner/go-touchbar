@@ -28,4 +28,6 @@ type Stepper struct {
 	OnChange  StepperOnChange
 }
 
+var _ Item = &Stepper{}
+
 func (me *Stepper) isAnItem() {}

@@ -23,4 +23,6 @@ type Custom struct {
 	// TODO: add gestures?
 }
 
+var _ Item = &Custom{}
+
 func (me *Custom) isAnItem() {}

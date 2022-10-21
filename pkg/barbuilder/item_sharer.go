@@ -10,4 +10,6 @@ type Sharer struct {
 	// TODO: needs delegate or something?
 }
 
+var _ Item = &Sharer{}
+
 func (me *Sharer) isAnItem() {}

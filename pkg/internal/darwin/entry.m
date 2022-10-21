@@ -46,8 +46,8 @@ typedef struct Context {
 
 InitResult initTouchBar(AttachMode mode, const char * data, void* me) {
   InitResult result;
-  result.result = nil;
-  result.err = nil;
+  result.result = NULL;
+  result.err = NULL;
 
   void (^handler)(char *) = ^void(char * event) {
     handleEvent(me, event);
@@ -83,7 +83,7 @@ InitResult initTouchBar(AttachMode mode, const char * data, void* me) {
   }
 
   Context* context = malloc(sizeof(Context));
-  if (context == nil) {
+  if (context == NULL) {
     result.err = "could not allocate internal context";
     return result;
   }
@@ -102,7 +102,7 @@ ErrorResult runDebug(void* ctx) {
   [app run];
 
   ErrorResult result;
-  result.err = nil;
+  result.err = NULL;
   return result;
 }
 
@@ -110,7 +110,7 @@ ErrorResult updateTouchBar(void* ctx, const char * data) {
   Context* context = (Context*) ctx;
 
   ErrorResult result;
-  result.err = nil;
+  result.err = NULL;
 
   NSError* err = [context->controller updateWithData:data];
   if (err != nil) {
@@ -128,6 +128,6 @@ ErrorResult destroyTouchBar(void* ctx) {
   free(context);
 
   ErrorResult result;
-  result.err = nil;
+  result.err = NULL;
   return result;
 }

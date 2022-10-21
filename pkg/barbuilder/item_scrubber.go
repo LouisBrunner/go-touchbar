@@ -27,4 +27,6 @@ type Scrubber struct {
 	OnChange         ScrubberOnChange
 }
 
+var _ Item = &Scrubber{}
+
 func (me *Scrubber) isAnItem() {}

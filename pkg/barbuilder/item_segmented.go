@@ -15,4 +15,6 @@ type SegmentedControl struct {
 	OnChange       SegmentedOnChange
 }
 
+var _ Item = &SegmentedControl{}
+
 func (me *SegmentedControl) isAnItem() {}

@@ -9,4 +9,6 @@ type Popover struct {
 	PressAndHold    bool
 }
 
+var _ Item = &Popover{}
+
 func (me *Popover) isAnItem() {}

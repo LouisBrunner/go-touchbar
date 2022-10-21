@@ -137,10 +137,10 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
   NSString* image = [data valueForKeyPath:@"Content.Image"];
   if (text != nil) {
     NSTextField* view = [NSTextField labelWithString:text];
+    view.textColor = [self transformColor:[data valueForKeyPath:@"Content.Color"]];;
     [item setView:view];
   } else if (image != nil) {
-    NSImageView* view = [[NSImageView alloc] init];
-    view.image = [self transformImage:image];
+    NSImageView* view = [NSImageView imageViewWithImage: [self transformImage:image]];
     [item setView:view];
   } else {
     NSLog(@"warning: label with invalid data %@", data);
@@ -156,7 +156,7 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
 }
 
 - (NSImage*) transformImage:(NSString*)name {
-  if (name == nil) {
+  if (name == nil || name == (id)[NSNull null]) {
     return nil;
   }
   NSImageName standard = [self.imageMapping objectForKey:name];
@@ -170,18 +170,16 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
   return sf;
 }
 
-- (NSColor*) transformColor:(NSString*)name {
-  if (name == nil) {
+- (NSColor*) transformColor:(NSDictionary*)details {
+  if (details == nil || details == (id)[NSNull null]) {
     return nil;
   }
-  // TODO: wrong, use a mapping to
-  // https://developer.apple.com/documentation/appkit/nscolor/standard_colors?changes=_5&language=objc
-  // instead
-  NSColor* standard = [NSColor colorNamed:name];
-  if (standard != nil) {
-    return standard;
-  }
-  return nil;
+  return [NSColor
+    colorWithSRGBRed:[[details objectForKey:@"Red"] doubleValue]
+    green:[[details objectForKey:@"Green"] doubleValue]
+    blue:[[details objectForKey:@"Blue"] doubleValue]
+    alpha:[[details objectForKey:@"Alpha"] doubleValue]
+  ];
 }
 
 - (void) initMapping {

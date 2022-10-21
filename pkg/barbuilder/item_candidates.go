@@ -13,4 +13,6 @@ type Candidates struct {
 	AllowsTextInputContextCandidates bool
 }
 
+var _ Item = &Candidates{}
+
 func (me *Candidates) isAnItem() {}

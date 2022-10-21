@@ -8,4 +8,6 @@ type Label struct {
 	// TODO: loads of options
 }
 
+var _ Item = &Label{}
+
 func (me *Label) isAnItem() {}
