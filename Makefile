@@ -5,6 +5,10 @@ build-example:
 	go build -o examples/Test.app/Contents/MacOS/tester ./examples/tester
 .PHONY: build-example
 
+debug-example: build-example
+	examples/Test.app/Contents/MacOS/tester
+.PHONY: debug-example
+
 run-example: build-example
 	open -W examples/Test.app
 .PHONY: run-example
