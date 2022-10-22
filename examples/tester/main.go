@@ -107,7 +107,10 @@ func main() {
 			reel1.Content = &barbuilder.ContentLabel{Text: *value1}
 			reel2.Content = &barbuilder.ContentLabel{Text: *value2}
 			reel3.Content = &barbuilder.ContentLabel{Text: *value3}
-			tb.Update(barbuilder.Configuration{Items: items})
+			err = tb.Update(barbuilder.Configuration{Items: items})
+			if err != nil {
+				return
+			}
 
 			time.Sleep(timeBetweenSpin)
 			if time.Since(start) >= 4*time.Second {
@@ -138,7 +141,7 @@ func main() {
 				Text: "🙁 Spin Again",
 			}
 		}
-		tb.Update(barbuilder.Configuration{Items: items})
+		err = tb.Update(barbuilder.Configuration{Items: items})
 	}
 
 	err := tb.Debug(barbuilder.Configuration{Items: items})

@@ -110,7 +110,7 @@ func processItem(prefix string, i int, item barbuilder.Item, principal *identifi
 		if handlers == nil {
 			return "", nil, fmt.Errorf("cannot use this item in this context %T (%v)", item, item)
 		}
-		handlers.segments[id] = widget.OnChange
+		handlers.segments[id] = widget.OnClick
 
 	case *barbuilder.Sharer:
 		id = makeID(prefix, "sharer", i)
@@ -133,6 +133,8 @@ func processItem(prefix string, i int, item barbuilder.Item, principal *identifi
 		handlers.steppers[id] = widget.OnChange
 
 		// standards
+	case *barbuilder.OtherItemsProxy:
+		id = standardOtherItemsProxy
 	case *barbuilder.SpaceSmall:
 		id = standardSpaceSmall
 	case *barbuilder.SpaceLarge:

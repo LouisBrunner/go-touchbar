@@ -1,9 +1,11 @@
 package barbuilder
 
+// Image represents an image usable by macOS
 type Image interface {
 	isAnImage()
 }
 
+// SFSymbol represents a standard Apple symbol compatible with the San Francisco font
 // See https://developer.apple.com/sf-symbols/ for full list
 type SFSymbol string
 
@@ -11,8 +13,9 @@ var _ Image = SFSymbol("")
 
 func (me SFSymbol) isAnImage() {}
 
-// See https://developer.apple.com/design/human-interface-guidelines/inputs/touch-bar/#interface-icons
-// for mapping to SFSymbol
+// TBSymbol represents a standard TouchBar icon
+// Note: if possible you should use `SFSymbol` instead
+// See https://developer.apple.com/design/human-interface-guidelines/inputs/touch-bar/#interface-icons for full list and mapping to `SFSymbol`
 type TBSymbol string
 
 var _ Image = TBSymbol("")

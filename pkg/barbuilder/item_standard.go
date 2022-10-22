@@ -1,5 +1,12 @@
 package barbuilder
 
+type OtherItemsProxy struct {
+}
+
+func (me *OtherItemsProxy) isAnItem() {}
+
+var _ Item = &OtherItemsProxy{}
+
 type SpaceSmall struct {
 }
 

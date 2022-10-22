@@ -15,8 +15,6 @@ type Group struct {
 	Children           []Item
 	PrefersEqualWidth  bool
 	PreferredItemWidth float32 // only used when PrefersEqualWidth is true
-
-	// TODO: missing compression settings
 }
 
 var _ Item = &Group{}

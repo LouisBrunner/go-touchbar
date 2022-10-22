@@ -10,6 +10,7 @@
 @end
 
 @implementation WindowController
+static NSTouchBarItemIdentifier standardOtherItems = @"net.lbrunner.touchbar.other_items";
 static NSTouchBarItemIdentifier standardSpaceSmall = @"net.lbrunner.touchbar.small_space";
 static NSTouchBarItemIdentifier standardSpaceLarge = @"net.lbrunner.touchbar.large_space";
 static NSTouchBarItemIdentifier standardSpaceFlexible = @"net.lbrunner.touchbar.flexible_space";
@@ -64,6 +65,7 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
   [self.lock lock];
   NSError* err = [self setData:data];
   if (err == nil) {
+    // TODO: BUGGY!!!
     // [self setupTouchBar:touchBar];
     [self updateItems:touchBar];
   }
@@ -74,10 +76,6 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
 - (NSArray<NSTouchBarItemIdentifier>*)setupTouchBar:(NSTouchBar*)touchBar {
   NSMutableArray* defaults = [[NSMutableArray alloc] init];
   [defaults setArray:[self.goData objectForKey:@"Default"]];
-  if ([[self.goData objectForKey:@"OtherItemsProxy"] intValue] == 1) {
-    [defaults addObject:NSTouchBarItemIdentifierOtherItemsProxy];
-  }
-
   for (int i = 0; i < [defaults count]; ++i) {
     NSTouchBarItemIdentifier newIdentifier = [self transformIdentifier:[defaults objectAtIndex:i]];
     if (newIdentifier != nil) {
@@ -286,6 +284,7 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
 
 - (void) initMapping {
   self.identifierMapping = @{
+    standardOtherItems: NSTouchBarItemIdentifierOtherItemsProxy,
     standardSpaceSmall: NSTouchBarItemIdentifierFixedSpaceSmall,
     standardSpaceLarge: NSTouchBarItemIdentifierFixedSpaceLarge,
     standardSpaceFlexible: NSTouchBarItemIdentifierFlexibleSpace,

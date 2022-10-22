@@ -9,6 +9,7 @@ import (
 const namespace = "net.lbrunner.touchbar"
 
 const (
+	standardOtherItemsProxy = namespace + ".other_items"
 	standardSpaceSmall      = namespace + ".small_space"
 	standardSpaceLarge      = namespace + ".large_space"
 	standardSpaceFlexible   = namespace + ".flexible_space"
@@ -64,7 +65,7 @@ func processConfig(config *barbuilder.Configuration) (*flatConfig, *handlers, er
 		customs:      make(map[identifier]barbuilder.CustomOnEvent),
 		pickers:      make(map[identifier]barbuilder.PickerOnSelected),
 		scrubbers:    make(map[identifier]barbuilder.ScrubberOnChange),
-		segments:     make(map[identifier]barbuilder.SegmentedOnChange),
+		segments:     make(map[identifier]barbuilder.SegmentedOnClick),
 		sliders:      make(map[identifier]barbuilder.SliderOnChange),
 		steppers:     make(map[identifier]barbuilder.StepperOnChange),
 	}
@@ -88,9 +89,7 @@ func processConfig(config *barbuilder.Configuration) (*flatConfig, *handlers, er
 		Principal: principal,
 		Default:   list,
 		Items:     dict,
-		// FIXME: should we allow positioning for that?
-		OtherItemsProxy: config.OtherItemsProxy,
-		Escape:          escapeID,
+		Escape:    escapeID,
 	}
 	return &data, &handlers, nil
 }

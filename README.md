@@ -42,7 +42,40 @@ if err != nil {
 
 See [example application](./examples/tester/main.go) for a real-life example.
 
-TODO: more details + godocs
+Note: most of the widgets are direct translations of the one in Apple's documentation and have similar options.
+Please refer to [the official documentation](https://developer.apple.com/documentation/appkit/touch_bar/creating_and_customizing_the_touch_bar?language=objc) for more details.
+
+You configure this library by specifying a list of items from the following options:
+
+- `Button`: a button that can be clicked (has an event handler)
+- **NOT IMPLEMENTED** `Candidates`: a list of text options, allows to give custom recommendations for the current text field
+- **NOT IMPLEMENTED** `ColorPicker`: used to choose a color (has an event handler)
+- **NOT IMPLEMENTED** `Custom`: can render anything you want, feedback any touch with a X position (has an event handler)
+- **NOT IMPLEMENTED** `Group`: used to group other items
+- `Label`: allows to display text and images
+- **NOT IMPLEMENTED** `Picker`: used to pick one or more options from a list of choices, equivalent to radio/checkbox buttons (has an event handler)
+- **NOT IMPLEMENTED** `Popover`: a button which shows more options when clicked, equivalent to a modal or collapse widget
+- **NOT IMPLEMENTED** `Scrubber`: allows to select items from a list, which supports scrolling (has an event handler)
+- **NOT IMPLEMENTED** `SegmentedControl`: shows multiple buttons grouped together, similar to `Picker` (has an event handler)
+- **NOT IMPLEMENTED** `Sharer`: allows to share using the standard macOS sharing system
+- **NOT IMPLEMENTED** `Slider`: a slider used to pick value in a range (has an event handler)
+- **NOT IMPLEMENTED** `Stepper`: a control to pick a value in a range through increments (has an event handler)
+
+But also from this list of standard Apple widgets which have no customizable options:
+
+- `OtherItemsProxy`: where to display other Touch Bar closer to the first responder
+- `SpaceSmall`: a small space
+- `SpaceLarge`: a bigger space
+- `SpaceFlexible`: a space that grows as much as possible
+- `CharacterPicker`: opens the macOS character picker (e.g. to pick an emoji)
+- `CandidateList`: shows the standard macOS predictive text widget
+- `TextFormat`: a group of text formatting options
+- `TextAlignment`: allows to pick text alignement
+- `TextColorPicker`: allows to pick text color
+- `TextList`: allows to pick text listing options
+- `TextStyle`: allows to pick text style
+
+TODO: more details
 
 ## Further work
 
@@ -50,14 +83,12 @@ Check TODO/FIXME as well
 
 - (!!!) Finish implementing widgets
 - Allow user customization (`customizationLabel`, `templateItems`, etc)
-- Ability to use standard/UI colors
-- Better choices for the color-picker
-- More customization to the custom widget
-- Group compressions
 - Layout constraints (e.g. sizing)
+- More options for the color-picker widget
+- More options to the custom widget
+- Support standard/UI colors
 - Support custom images
 - Thread-safety
-- Better documentation
 - Better validation in Go (validator on the structs?)
 - Make a catalog like [Apple's](https://developer.apple.com/documentation/appkit/touch_bar/creating_and_customizing_the_touch_bar?language=objc)
 

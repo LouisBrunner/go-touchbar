@@ -13,7 +13,7 @@ type handlers struct {
 	customs      map[identifier]barbuilder.CustomOnEvent
 	pickers      map[identifier]barbuilder.PickerOnSelected
 	scrubbers    map[identifier]barbuilder.ScrubberOnChange
-	segments     map[identifier]barbuilder.SegmentedOnChange
+	segments     map[identifier]barbuilder.SegmentedOnClick
 	sliders      map[identifier]barbuilder.SliderOnChange
 	steppers     map[identifier]barbuilder.StepperOnChange
 }
@@ -103,7 +103,7 @@ func (me *touchBar) handleEventLogic(eventJSON string) error {
 		if !found {
 			return fmt.Errorf("unknown segment %v", event.Target)
 		}
-		data := 0
+		data := []bool{}
 		err := json.Unmarshal(event.Data, &data)
 		if err != nil {
 			return err
@@ -143,9 +143,7 @@ func (me *touchBar) handleEventLogic(eventJSON string) error {
 
 func (me *touchBar) handleEvent(eventJSON string) {
 	err := me.handleEventLogic(eventJSON)
-	if err != nil {
-		// FIXME: no idea what to do, needs some kind of logger?
-		fmt.Printf("event error: %v\n", err)
-		return
+	if err != nil && me.options.EventErrorLogger != nil {
+		me.options.EventErrorLogger(err)
 	}
 }

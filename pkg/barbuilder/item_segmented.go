@@ -1,6 +1,6 @@
 package barbuilder
 
-type SegmentedOnChange func(i int)
+type SegmentedOnClick func(clicked []bool)
 
 type Segment struct {
 	Label string
@@ -12,7 +12,7 @@ type SegmentedControl struct {
 
 	Segments       []Segment
 	SelectMultiple bool
-	OnChange       SegmentedOnChange
+	OnClick        SegmentedOnClick
 }
 
 var _ Item = &SegmentedControl{}
