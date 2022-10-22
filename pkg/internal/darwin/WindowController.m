@@ -72,21 +72,22 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
   return err;
 }
 
-- (NSArray<NSTouchBarItemIdentifier>*)setupTouchBar:(NSTouchBar*)touchBar {
-  NSMutableArray* defaults = [[NSMutableArray alloc] init];
-  [defaults setArray:[self.goData objectForKey:@"Default"]];
-  for (int i = 0; i < [defaults count]; ++i) {
-    NSTouchBarItemIdentifier newIdentifier = [self transformIdentifier:[defaults objectAtIndex:i]];
+- (NSArray<NSTouchBarItemIdentifier>*)mapIdentifiers:(NSArray*)input {
+  NSMutableArray* output = [[NSMutableArray alloc] init];
+  [output setArray:input];
+  for (int i = 0; i < [output count]; ++i) {
+    NSTouchBarItemIdentifier newIdentifier = [self transformIdentifier:[output objectAtIndex:i]];
     if (newIdentifier != nil) {
-      [defaults replaceObjectAtIndex:i withObject:newIdentifier];
+      [output replaceObjectAtIndex:i withObject:newIdentifier];
     }
   }
+  return output;
+}
 
-  [touchBar setDefaultItemIdentifiers:defaults];
+- (void)setupTouchBar:(NSTouchBar*)touchBar {
+  [touchBar setDefaultItemIdentifiers:[self mapIdentifiers:[self.goData objectForKey:@"Default"]]];
   [touchBar setPrincipalItemIdentifier:[self transformIdentifier:[self.goData objectForKey:@"Principal"]]];
   [touchBar setEscapeKeyReplacementItemIdentifier:[self transformIdentifier:[self.goData objectForKey:@"Escape"]]];
-
-  return defaults;
 }
 
 - (NSError*)setData:(const char *)rawData {
@@ -126,6 +127,11 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
     [self updateWidgetLabel:myItem withData:data];
     item = myItem;
 
+  } else if ([identifier hasPrefix:prefixPopover]) {
+    NSPopoverTouchBarItem* myItem = [[[NSPopoverTouchBarItem alloc] initWithIdentifier:identifier] autorelease];
+    [self updateWidgetPopover:myItem touchBar:[[NSTouchBar alloc] init] withData:data];
+    item = myItem;
+
   } else if (![identifier isEqual:@""]) {
     NSLog(@"warning: unsupported identifier %@ with %@", identifier, data);
   }
@@ -150,6 +156,13 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
       [self updateWidgetButton:item withData:data];
     } else if ([identifier hasPrefix:prefixLabel]) {
       [self updateWidgetLabel:item withData:data];
+    } else if ([identifier hasPrefix:prefixPopover]) {
+      NSPopoverTouchBarItem* pop = (NSPopoverTouchBarItem*) item;
+      NSTouchBar* sub = pop.popoverTouchBar != nil ? pop.popoverTouchBar : pop.pressAndHoldTouchBar;
+      [self updateWidgetPopover:item touchBar:sub withData:data];
+      for (id child in [data objectForKey:@"Bar"]) {
+        [self updateItem:sub withIdentifier:[self transformIdentifier:child]];
+      }
     } else {
       NSLog(@"warning: unknown identifier %@ with %@", identifier, data);
     }
@@ -177,6 +190,21 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
   item.action = @selector(buttonAction:);
   item.enabled = [[data valueForKeyPath:@"Disabled"] intValue] == 0;
   item.bezelColor = [self transformColor:[data valueForKeyPath:@"BezelColor"]];
+}
+
+- (void)updateWidgetPopover:(NSPopoverTouchBarItem*)item touchBar:(NSTouchBar*)sub withData:(NSDictionary*)data {
+  [self updateWidgetCore:item withData:data];
+
+  item.collapsedRepresentationLabel = [data valueForKeyPath:@"CollapsedText"];
+  item.collapsedRepresentationImage = [self transformImage:[data valueForKeyPath:@"CollapsedImage"]];
+  item.popoverTouchBar = sub;
+  if ([[data valueForKeyPath:@"PressAndHold"] intValue] == 1) {
+    item.pressAndHoldTouchBar = sub;
+  } else {
+    item.pressAndHoldTouchBar = nil;
+  }
+  sub.defaultItemIdentifiers = [self mapIdentifiers:[data objectForKey:@"Bar"]];
+  sub.delegate = self;
 }
 
 - (void)buttonAction:(id)sender {

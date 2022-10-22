@@ -90,9 +90,9 @@ func processItem(prefix string, i int, item barbuilder.Item, principal *identifi
 		}
 		result = itemPopover{
 			CommonProperties: widget.CommonProperties,
-			Collapsed:        widget.Collapsed,
+			CollapsedText:    widget.CollapsedText,
+			CollapsedImage:   widget.CollapsedImage,
 			Bar:              list,
-			ShowCloseButton:  widget.ShowCloseButton,
 			PressAndHold:     widget.PressAndHold,
 		}
 

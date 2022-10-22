@@ -27,8 +27,8 @@ type itemGroup struct {
 type itemPopover struct {
 	barbuilder.CommonProperties
 
-	Collapsed       barbuilder.View
-	Bar             []identifier
-	ShowCloseButton bool
-	PressAndHold    bool
+	CollapsedText  string
+	CollapsedImage barbuilder.Image
+	Bar            []identifier
+	PressAndHold   bool
 }

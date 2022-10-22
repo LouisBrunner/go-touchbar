@@ -54,7 +54,7 @@ You configure this library by specifying a list of items from the following opti
 - **NOT IMPLEMENTED** `Group`: used to group other items
 - `Label`: allows to display text and images
 - **NOT IMPLEMENTED** `Picker`: used to pick one or more options from a list of choices, equivalent to radio/checkbox buttons (has an event handler)
-- **NOT IMPLEMENTED** `Popover`: a button which shows more options when clicked, equivalent to a modal or collapse widget
+- `Popover`: a button which shows more options when clicked, equivalent to a modal or collapse widget
 - **NOT IMPLEMENTED** `Scrubber`: allows to select items from a list, which supports scrolling (has an event handler)
 - **NOT IMPLEMENTED** `SegmentedControl`: shows multiple buttons grouped together, similar to `Picker` (has an event handler)
 - **NOT IMPLEMENTED** `Sharer`: allows to share using the standard macOS sharing system
@@ -75,8 +75,6 @@ But also from this list of standard Apple widgets which have no customizable opt
 - `TextList`: allows to pick text listing options
 - `TextStyle`: allows to pick text style
 
-TODO: more details
-
 ## Further work
 
 Check TODO/FIXME as well
@@ -84,8 +82,12 @@ Check TODO/FIXME as well
 - (!!!) Finish implementing widgets
 - Allow user customization (`customizationLabel`, `templateItems`, etc)
 - Layout constraints (e.g. sizing)
-- More options for the color-picker widget
-- More options to the custom widget
+- More options for widgets:
+
+  - Color-picker
+  - Custom
+  - Popover
+
 - Support standard/UI colors
 - Support custom images
 - Better validation in Go (validator on the structs?)

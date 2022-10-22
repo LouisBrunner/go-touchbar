@@ -48,15 +48,45 @@ func main() {
 		},
 	}
 	items := []barbuilder.Item{
-		spin,
+		&barbuilder.Label{
+			Content: &barbuilder.ContentLabel{
+				Text: "Go Touch Bar",
+			},
+		},
 		&barbuilder.SpaceLarge{},
-		reel1,
+		&barbuilder.Popover{
+			CollapsedText:  "Demo",
+			CollapsedImage: barbuilder.SFSymbol("dollarsign.circle"),
+			Bar: []barbuilder.Item{
+				&barbuilder.Label{
+					Content: &barbuilder.ContentLabel{
+						Text: "Demo",
+					},
+				},
+				&barbuilder.SpaceLarge{},
+				spin,
+				&barbuilder.SpaceLarge{},
+				reel1,
+				&barbuilder.SpaceSmall{},
+				reel2,
+				&barbuilder.SpaceSmall{},
+				reel3,
+				&barbuilder.SpaceLarge{},
+				result,
+			},
+		},
 		&barbuilder.SpaceSmall{},
-		reel2,
-		&barbuilder.SpaceSmall{},
-		reel3,
-		&barbuilder.SpaceLarge{},
-		result,
+		&barbuilder.Popover{
+			CollapsedText:  "Catalog",
+			CollapsedImage: barbuilder.TBBookmarksTemplate,
+			Bar: []barbuilder.Item{
+				&barbuilder.Label{
+					Content: &barbuilder.ContentLabel{
+						Text: "Catalog",
+					},
+				},
+			},
+		},
 	}
 	tb := touchbar.New(barbuilder.Options{})
 
