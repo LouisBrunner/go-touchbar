@@ -43,7 +43,7 @@ func handleEvent(raw unsafe.Pointer, event *C.char) {
 	me.handleEvent(C.GoString(event))
 }
 
-func (me *touchBar) install(debug bool) error {
+func (me *touchBar) install(debug bool, configuration barbuilder.Configuration) error {
 	if me.context != nil {
 		return fmt.Errorf("touch bar already initialized")
 	}
@@ -51,7 +51,7 @@ func (me *touchBar) install(debug bool) error {
 	if debug {
 		mode = C.kDebug
 	}
-	data, handlers, err := serializeConfig(&me.options.Configuration)
+	data, handlers, err := serializeConfig(&configuration)
 	if err != nil {
 		return err
 	}
@@ -65,12 +65,12 @@ func (me *touchBar) install(debug bool) error {
 	return nil
 }
 
-func (me *touchBar) Install() error {
-	return me.install(false)
+func (me *touchBar) Install(configuration barbuilder.Configuration) error {
+	return me.install(false, configuration)
 }
 
-func (me *touchBar) Debug() error {
-	err := me.install(true)
+func (me *touchBar) Debug(configuration barbuilder.Configuration) error {
+	err := me.install(true, configuration)
 	if err != nil {
 		return err
 	}
@@ -81,7 +81,7 @@ func (me *touchBar) Update(configuration barbuilder.Configuration) error {
 	if me.context == nil {
 		return fmt.Errorf("touch bar has not been initialized")
 	}
-	data, handlers, err := serializeConfig(&me.options.Configuration)
+	data, handlers, err := serializeConfig(&configuration)
 	if err != nil {
 		return err
 	}
