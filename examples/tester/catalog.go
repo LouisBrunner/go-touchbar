@@ -46,3 +46,47 @@ func makeLabelCatalog() barbuilder.Item {
 		},
 	}
 }
+
+func makeButtonCatalog(update func()) barbuilder.Item {
+	result := &barbuilder.Label{Content: &barbuilder.ContentLabel{Text: ""}}
+
+	return &barbuilder.Popover{
+		CollapsedText:  "Button",
+		CollapsedImage: barbuilder.SFSymbol("hand.point.up.fill"),
+		Bar: []barbuilder.Item{
+			&barbuilder.Label{
+				Content: &barbuilder.ContentLabel{
+					Text: "Button",
+				},
+			},
+			&barbuilder.SpaceSmall{},
+			&barbuilder.Button{
+				Title: "Plain",
+				OnClick: func() {
+					result.Content = &barbuilder.ContentLabel{Text: "Button1 pressed"}
+					update()
+				},
+			},
+			&barbuilder.SpaceSmall{},
+			&barbuilder.Button{
+				Image: barbuilder.TBAlarmTemplate,
+				OnClick: func() {
+					result.Content = &barbuilder.ContentLabel{Text: "Button2 pressed"}
+					update()
+				},
+			},
+			&barbuilder.SpaceSmall{},
+			&barbuilder.Button{
+				Title:      "With Icon & Color",
+				Image:      barbuilder.SFSymbol("exclamationmark.triangle.fill"),
+				BezelColor: barbuilder.HexColor("#e35412"),
+				OnClick: func() {
+					result.Content = &barbuilder.ContentLabel{Text: "Button3 pressed"}
+					update()
+				},
+			},
+			&barbuilder.SpaceSmall{},
+			result,
+		},
+	}
+}

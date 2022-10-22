@@ -66,11 +66,11 @@ func main() {
 			},
 		},
 		makeLabelCatalog(),
-		// makeButtonCatalog(updater),
+		makeButtonCatalog(updater),
 		// makePopoverCatalog(),
 	}
 
-	items = catalogItems
+	items = startItems
 	err := tb.Debug(barbuilder.Configuration{Items: items})
 	if err != nil {
 		panic(err)
