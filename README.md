@@ -97,4 +97,4 @@ Check TODO/FIXME as well
 
 This library's API was influenced by [Electron's](https://www.electronjs.org/docs/latest/api/touch-bar).
 
-The [example application](./examples/tester) is a reimplementation of [`electron-touch-bar`](https://github.com/pahund/electron-touch-bar).
+The [example application](./examples/tester/demo.go) is a reimplementation of [`electron-touch-bar`](https://github.com/pahund/electron-touch-bar).
