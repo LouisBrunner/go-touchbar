@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/rand"
+	"fmt"
 	"math/big"
 
 	touchbar "github.com/LouisBrunner/go-touchbar/pkg"
@@ -24,12 +25,15 @@ func getRandomValue() (*string, error) {
 
 func main() {
 	tb := touchbar.New(barbuilder.Options{})
-	var items []barbuilder.Item
+	var items, catalogItems, startItems []barbuilder.Item
 	updater := func() {
-		tb.Update(barbuilder.Configuration{Items: items})
+		err := tb.Update(barbuilder.Configuration{Items: items})
+		if err != nil {
+			fmt.Printf("error: %+v\n", err)
+		}
 	}
 
-	items = []barbuilder.Item{
+	startItems = []barbuilder.Item{
 		&barbuilder.Label{
 			Content: &barbuilder.ContentLabel{
 				Text: "Go Touch Bar",
@@ -38,19 +42,35 @@ func main() {
 		&barbuilder.SpaceLarge{},
 		makeDemo(updater),
 		&barbuilder.SpaceSmall{},
-		&barbuilder.Popover{
-			CollapsedText:  "Catalog",
-			CollapsedImage: barbuilder.TBBookmarksTemplate,
-			Bar: []barbuilder.Item{
-				&barbuilder.Label{
-					Content: &barbuilder.ContentLabel{
-						Text: "Catalog",
-					},
-				},
+		&barbuilder.Button{
+			Title: "Catalog",
+			Image: barbuilder.TBBookmarksTemplate,
+			OnClick: func() {
+				items = catalogItems
+				updater()
 			},
 		},
 	}
 
+	catalogItems = []barbuilder.Item{
+		&barbuilder.Button{
+			Title: "Close",
+			OnClick: func() {
+				items = startItems
+				updater()
+			},
+		},
+		&barbuilder.Label{
+			Content: &barbuilder.ContentLabel{
+				Text: "Catalog",
+			},
+		},
+		makeLabelCatalog(),
+		// makeButtonCatalog(updater),
+		// makePopoverCatalog(),
+	}
+
+	items = catalogItems
 	err := tb.Debug(barbuilder.Configuration{Items: items})
 	if err != nil {
 		panic(err)

@@ -2,11 +2,11 @@
 
 @interface WindowController () <NSTouchBarDelegate>
 @property (copy) void (^handler)(char *);
-@property NSDictionary* goData;
-@property NSRegularExpression* hexRegex;
-@property NSDictionary* identifierMapping;
-@property NSDictionary* imageMapping;
-@property NSLock *lock;
+@property (retain) NSDictionary* goData;
+@property (copy) NSRegularExpression* hexRegex;
+@property (copy) NSDictionary* identifierMapping;
+@property (copy) NSDictionary* imageMapping;
+@property (retain) NSLock *lock;
 @end
 
 @implementation WindowController
@@ -66,9 +66,11 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
   NSError* err = [self setData:data];
   if (err == nil) {
     [self setupTouchBar:touchBar];
-    [self updateItems:touchBar];
   }
   [self.lock unlock];
+  if (err == nil) {
+    [self updateItems:touchBar];
+  }
   return err;
 }
 
@@ -112,6 +114,10 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
 }
 
 - (nullable NSTouchBarItem *)touchBar:(NSTouchBar *)touchBar makeItemForIdentifier:(NSTouchBarItemIdentifier)identifier {
+  if ([identifier isEqual:@""]) {
+    return nil;
+  }
+
   NSTouchBarItem* item = nil;
   [self.lock lock];
   NSDictionary* data = [[self.goData objectForKey:@"Items"] objectForKey:identifier];
@@ -132,7 +138,7 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
     [self updateWidgetPopover:myItem touchBar:[[NSTouchBar alloc] init] withData:data];
     item = myItem;
 
-  } else if (![identifier isEqual:@""]) {
+  } else {
     NSLog(@"warning: unsupported identifier %@ with %@", identifier, data);
   }
 
@@ -149,6 +155,7 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
     return;
   }
 
+  [self.lock lock];
   NSDictionary* data = [[self.goData objectForKey:@"Items"] objectForKey:identifier];
   dispatch_async(dispatch_get_main_queue(), ^{
     // TODO: finish
@@ -167,6 +174,7 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
       NSLog(@"warning: unknown identifier %@ with %@", identifier, data);
     }
   });
+  [self.lock unlock];
 }
 
 - (void)updateItems:(NSTouchBar *)touchBar {
