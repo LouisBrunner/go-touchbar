@@ -13,26 +13,30 @@ go get github.com/LouisBrunner/go-touchbar
 ```go
 // Setup your window code (including NSApplication/NSWindow on macOS)
 
-tb := touchbar.New(touchbar.Options{
-  Configuration: touchbar.Configuration{
-    // Add your configuration here
-  },
-})
+tb := touchbar.New(touchbar.Options{})
 
-err := tb.Install()
+err := tb.Install(Configuration: touchbar.Configuration{
+  // Add your configuration here
+})
 if err != nil {
   // handle
 }
 
 // run your application
 
+// when you want to update the touchbar (even from another routine), call do
+err = tb.Update(Configuration: touchbar.Configuration{
+  // Add your updated configuration here
+})
+if err != nil {
+  // handle
+}
+
 err = tb.Uninstall()
 if err != nil {
   // handle
 }
 ```
-
-TODO: add an example for the update flow
 
 ### Configuration
 
@@ -42,11 +46,19 @@ TODO: more details + godocs
 
 ## Further work
 
+Check TODO/FIXME as well
+
+- (!!!) Finish implementing widgets
 - Allow user customization (`customizationLabel`, `templateItems`, etc)
-- Allow more options (check TODOs, layout constraints, custom color/styling, etc)
-- Thread-safety
+- Ability to use standard/UI colors
+- Better choices for the color-picker
+- More customization to the custom widget
+- Group compressions
+- Layout constraints (e.g. sizing)
 - Support custom images
+- Thread-safety
 - Better documentation
+- Better validation in Go (validator on the structs?)
 - Make a catalog like [Apple's](https://developer.apple.com/documentation/appkit/touch_bar/creating_and_customizing_the_touch_bar?language=objc)
 
 ## Acknowledgements

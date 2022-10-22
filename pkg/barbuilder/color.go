@@ -15,6 +15,12 @@ var _ Color = &RGBAColor{}
 
 func (me *RGBAColor) isAColor() {}
 
+type HexColor string
+
+var _ Color = HexColor("")
+
+func (me HexColor) isAColor() {}
+
 // TODO: add standard colors https://developer.apple.com/documentation/appkit/nscolor/standard_colors?changes=_5&language=objc
 // TODO: add UI colors https://developer.apple.com/documentation/appkit/nscolor/ui_element_colors?changes=_5&language=objc
 // TODO: add more custom color spaces

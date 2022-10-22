@@ -5,14 +5,17 @@ type Image interface {
 }
 
 // See https://developer.apple.com/sf-symbols/ for full list
-// FIXME: would be nice to have some kind of validation
 type SFSymbol string
+
+var _ Image = SFSymbol("")
 
 func (me SFSymbol) isAnImage() {}
 
 // See https://developer.apple.com/design/human-interface-guidelines/inputs/touch-bar/#interface-icons
 // for mapping to SFSymbol
 type TBSymbol string
+
+var _ Image = TBSymbol("")
 
 func (me TBSymbol) isAnImage() {}
 

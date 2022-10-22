@@ -3,8 +3,10 @@
 @interface WindowController () <NSTouchBarDelegate>
 @property (copy) void (^handler)(char *);
 @property NSDictionary* goData;
+@property NSRegularExpression* hexRegex;
 @property NSDictionary* identifierMapping;
 @property NSDictionary* imageMapping;
+@property NSLock *lock;
 @end
 
 @implementation WindowController
@@ -19,6 +21,7 @@ static NSTouchBarItemIdentifier standardTextColorPicker = @"net.lbrunner.touchba
 static NSTouchBarItemIdentifier standardTextList = @"net.lbrunner.touchbar.text_list";
 static NSTouchBarItemIdentifier standardTextStyle = @"net.lbrunner.touchbar.text_style";
 
+static NSTouchBarItemIdentifier prefixWidget = @"net.lbrunner.touchbar";
 static NSTouchBarItemIdentifier prefixButton = @"net.lbrunner.touchbar.button.";
 static NSTouchBarItemIdentifier prefixCandidates = @"net.lbrunner.touchbar.candidates.";
 static NSTouchBarItemIdentifier prefixColorpicker = @"net.lbrunner.touchbar.colorpicker.";
@@ -37,8 +40,16 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
   if ((self = [WindowController alloc]) == nil) {
     return nil;
   }
+  self.lock = [[NSLock alloc] init];
   self.handler = handler;
   NSError* err = [self setData:data];
+  if (err != nil) {
+    if (error != nil) {
+      *error = err;
+    }
+    return nil;
+  }
+  err = [self initConst];
   if (err != nil) {
     if (error != nil) {
       *error = err;
@@ -49,13 +60,36 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
   return self;
 }
 
-- (NSError*)updateWithData:(const char *)data {
+- (NSError*)update:(NSTouchBar*)touchBar withData:(const char *)data {
+  [self.lock lock];
   NSError* err = [self setData:data];
-  if (err != nil) {
-    return err;
+  if (err == nil) {
+    // [self setupTouchBar:touchBar];
+    [self updateItems:touchBar];
   }
-  // TODO: update code
-  return nil;
+  [self.lock unlock];
+  return err;
+}
+
+- (NSArray<NSTouchBarItemIdentifier>*)setupTouchBar:(NSTouchBar*)touchBar {
+  NSMutableArray* defaults = [[NSMutableArray alloc] init];
+  [defaults setArray:[self.goData objectForKey:@"Default"]];
+  if ([[self.goData objectForKey:@"OtherItemsProxy"] intValue] == 1) {
+    [defaults addObject:NSTouchBarItemIdentifierOtherItemsProxy];
+  }
+
+  for (int i = 0; i < [defaults count]; ++i) {
+    NSTouchBarItemIdentifier newIdentifier = [self transformIdentifier:[defaults objectAtIndex:i]];
+    if (newIdentifier != nil) {
+      [defaults replaceObjectAtIndex:i withObject:newIdentifier];
+    }
+  }
+
+  [touchBar setDefaultItemIdentifiers:defaults];
+  [touchBar setPrincipalItemIdentifier:[self transformIdentifier:[self.goData objectForKey:@"Principal"]]];
+  [touchBar setEscapeKeyReplacementItemIdentifier:[self transformIdentifier:[self.goData objectForKey:@"Escape"]]];
+
+  return defaults;
 }
 
 - (NSError*)setData:(const char *)rawData {
@@ -70,43 +104,67 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
 }
 
 - (NSTouchBar*)makeTouchBar {
+  [self.lock lock];
   NSTouchBar* bar = [[NSTouchBar alloc] init];
-
-  NSMutableArray* defaults = [[NSMutableArray alloc] init];
-  [defaults setArray:[self.goData objectForKey:@"Default"]];
-  if ([[self.goData objectForKey:@"OtherItemsProxy"] intValue] == 1) {
-    [defaults addObject:NSTouchBarItemIdentifierOtherItemsProxy];
-  }
-
-  for (int i = 0; i < [defaults count]; ++i) {
-    NSTouchBarItemIdentifier newIdentifier = [self transformIdentifier:[defaults objectAtIndex:i]];
-    if (newIdentifier != nil) {
-      [defaults replaceObjectAtIndex:i withObject:newIdentifier];
-    }
-  }
-
+  [self setupTouchBar:bar];
   [bar setDelegate:self];
-  [bar setDefaultItemIdentifiers:defaults];
-  [bar setPrincipalItemIdentifier:[self transformIdentifier:[self.goData objectForKey:@"Principal"]]];
-  [bar setEscapeKeyReplacementItemIdentifier:[self transformIdentifier:[self.goData objectForKey:@"Escape"]]];
+  [bar autorelease];
+  [self.lock unlock];
   return bar;
 }
 
 - (nullable NSTouchBarItem *)touchBar:(NSTouchBar *)touchBar makeItemForIdentifier:(NSTouchBarItemIdentifier)identifier {
-  // TODO: finish
+  NSTouchBarItem* item = nil;
+  [self.lock lock];
   NSDictionary* data = [[self.goData objectForKey:@"Items"] objectForKey:identifier];
+
+  // TODO: finish
   if ([identifier hasPrefix:prefixButton]) {
-    NSButtonTouchBarItem* item = [[[NSButtonTouchBarItem alloc] initWithIdentifier:identifier] autorelease];
-    [self updateWidgetButton:item withData:data];
-    return item;
+    NSButtonTouchBarItem* myItem = [[[NSButtonTouchBarItem alloc] initWithIdentifier:identifier] autorelease];
+    [self updateWidgetButton:myItem withData:data];
+    item = myItem;
+
   } else if ([identifier hasPrefix:prefixLabel]) {
-    NSCustomTouchBarItem* item = [[[NSCustomTouchBarItem alloc] initWithIdentifier:identifier] autorelease];
-    [self updateWidgetLabel:item withData:data];
-    return item;
-  } else {
+    NSCustomTouchBarItem* myItem = [[[NSCustomTouchBarItem alloc] initWithIdentifier:identifier] autorelease];
+    [self updateWidgetLabel:myItem withData:data];
+    item = myItem;
+
+  } else if (![identifier isEqual:@""]) {
     NSLog(@"warning: unsupported identifier %@ with %@", identifier, data);
   }
-  return nil;
+
+  [self.lock unlock];
+  return item;
+}
+
+- (void)updateItem:(NSTouchBar *)touchBar withIdentifier:(NSTouchBarItemIdentifier)identifier {
+  if ([identifier isEqual:@""] || ![identifier hasPrefix:prefixWidget]) {
+    return;
+  }
+  id item = [touchBar itemForIdentifier:identifier];
+  if (item == nil) {
+    return;
+  }
+
+  NSDictionary* data = [[self.goData objectForKey:@"Items"] objectForKey:identifier];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    // TODO: finish
+    if ([identifier hasPrefix:prefixButton]) {
+      [self updateWidgetButton:item withData:data];
+    } else if ([identifier hasPrefix:prefixLabel]) {
+      [self updateWidgetLabel:item withData:data];
+    } else {
+      NSLog(@"warning: unknown identifier %@ with %@", identifier, data);
+    }
+  });
+}
+
+- (void)updateItems:(NSTouchBar *)touchBar {
+  [self updateItem:touchBar withIdentifier:touchBar.escapeKeyReplacementItemIdentifier];
+  [self updateItem:touchBar withIdentifier:touchBar.principalItemIdentifier];
+  for (id item in touchBar.itemIdentifiers) {
+    [self updateItem:touchBar withIdentifier:item];
+  }
 }
 
 - (void)updateWidgetCore:(NSTouchBarItem*)item withData:(NSDictionary*)data {
@@ -174,12 +232,56 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
   if (details == nil || details == (id)[NSNull null]) {
     return nil;
   }
+  if ([details isKindOfClass:[NSString class]]) {
+    NSString* strDetails = (id)details;
+    int length = [strDetails length];
+
+    if ([self.hexRegex firstMatchInString:strDetails options:0 range:NSMakeRange(0, length)] == nil) {
+      // no idea
+      NSLog(@"unsupported color: %@", strDetails);
+      return nil;
+    }
+
+    // hex string
+    if ([strDetails hasPrefix:@"#"]) {
+      strDetails = [strDetails substringWithRange:NSMakeRange(1, length - 1)];
+    }
+    NSScanner* scanner = [NSScanner scannerWithString:strDetails];
+    unsigned int hexColor;
+    if (![scanner scanHexInt:&hexColor]) {
+      NSLog(@"invalid hex color: %@", strDetails);
+      return nil;
+    }
+    return [NSColor
+      colorWithSRGBRed:(CGFloat)((hexColor >> 16) & 0xff) / 255.0
+      green:(CGFloat)((hexColor >> 8) & 0xff) / 255.0
+      blue:(CGFloat)((hexColor >> 0) & 0xff) / 255.0
+      alpha:1.0
+    ];
+  }
+  // rgba object
   return [NSColor
     colorWithSRGBRed:[[details objectForKey:@"Red"] doubleValue]
     green:[[details objectForKey:@"Green"] doubleValue]
     blue:[[details objectForKey:@"Blue"] doubleValue]
     alpha:[[details objectForKey:@"Alpha"] doubleValue]
   ];
+}
+
+- (NSError*) initConst {
+  NSError* error = nil;
+  self.hexRegex = [NSRegularExpression
+    regularExpressionWithPattern:@"^#?[a-f0-9]{6}$"
+    options:NSRegularExpressionCaseInsensitive
+    error:&error
+  ];
+  if (self.hexRegex == nil) {
+    if (error != nil) {
+      return error;
+    }
+    return [[[NSError alloc] initWithDomain:@"net.lbrunner.touchbar.go" code:1 userInfo:@{@"Error reason": @"cannot make regex"}] autorelease];
+  }
+  return nil;
 }
 
 - (void) initMapping {

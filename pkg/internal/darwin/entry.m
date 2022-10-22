@@ -112,7 +112,7 @@ ErrorResult updateTouchBar(void* ctx, const char * data) {
   ErrorResult result;
   result.err = NULL;
 
-  NSError* err = [context->controller updateWithData:data];
+  NSError* err = [context->controller update:context->controller.touchBar withData:data];
   if (err != nil) {
     result.err = [[err localizedDescription] UTF8String];
   }
