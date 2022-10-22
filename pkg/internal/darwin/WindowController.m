@@ -65,8 +65,7 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
   [self.lock lock];
   NSError* err = [self setData:data];
   if (err == nil) {
-    // TODO: BUGGY!!!
-    // [self setupTouchBar:touchBar];
+    [self setupTouchBar:touchBar];
     [self updateItems:touchBar];
   }
   [self.lock unlock];

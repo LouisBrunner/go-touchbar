@@ -66,11 +66,15 @@ func (me *touchBar) install(debug bool, configuration barbuilder.Configuration) 
 }
 
 func (me *touchBar) Install(configuration barbuilder.Configuration) error {
+	me.lock.Lock()
+	defer me.lock.Unlock()
 	return me.install(false, configuration)
 }
 
 func (me *touchBar) Debug(configuration barbuilder.Configuration) error {
+	me.lock.Lock()
 	err := me.install(true, configuration)
+	me.lock.Unlock()
 	if err != nil {
 		return err
 	}
@@ -78,6 +82,8 @@ func (me *touchBar) Debug(configuration barbuilder.Configuration) error {
 }
 
 func (me *touchBar) Update(configuration barbuilder.Configuration) error {
+	me.lock.Lock()
+	defer me.lock.Unlock()
 	if me.context == nil {
 		return fmt.Errorf("touch bar has not been initialized")
 	}
@@ -91,6 +97,8 @@ func (me *touchBar) Update(configuration barbuilder.Configuration) error {
 }
 
 func (me *touchBar) Uninstall() error {
+	me.lock.Lock()
+	defer me.lock.Unlock()
 	if me.context == nil {
 		return fmt.Errorf("touch bar has not been initialized")
 	}

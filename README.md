@@ -88,7 +88,6 @@ Check TODO/FIXME as well
 - More options to the custom widget
 - Support standard/UI colors
 - Support custom images
-- Thread-safety
 - Better validation in Go (validator on the structs?)
 - Make a catalog like [Apple's](https://developer.apple.com/documentation/appkit/touch_bar/creating_and_customizing_the_touch_bar?language=objc)
 
