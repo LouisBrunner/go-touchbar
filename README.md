@@ -40,6 +40,8 @@ if err != nil {
 
 ### Configuration
 
+![Demo](./docs/demo.mp4)
+
 See [example application](./examples/tester/main.go) for a real-life example.
 
 Note: most of the widgets are direct translations of the one in Apple's documentation and have similar options.
