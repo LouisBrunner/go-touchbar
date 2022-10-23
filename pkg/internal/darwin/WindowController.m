@@ -194,7 +194,7 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
 }
 
 - (void)updateWidgetCore:(NSTouchBarItem*)item withData:(NSDictionary*)data {
-  item.visibilityPriority = [[data objectForKey:@"Priority"] floatValue] == 0;
+  item.visibilityPriority = [[data objectForKey:@"Priority"] floatValue];
 }
 
 - (void)updateWidgetButton:(NSButtonTouchBarItem*)item withData:(NSDictionary*)data {
@@ -226,6 +226,7 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
     item.pressAndHoldTouchBar = nil;
   }
   sub.defaultItemIdentifiers = [self mapIdentifiers:[data objectForKey:@"Bar"]];
+  sub.principalItemIdentifier = [self transformIdentifier:[data objectForKey:@"Principal"]];
   sub.delegate = self;
 }
 

@@ -42,5 +42,6 @@ type itemPopover struct {
 	CollapsedText  string
 	CollapsedImage barbuilder.Image
 	Bar            []identifier
+	Principal      identifier
 	PressAndHold   bool
 }

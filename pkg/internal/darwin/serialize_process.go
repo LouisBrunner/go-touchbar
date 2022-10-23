@@ -85,14 +85,12 @@ func processItem(prefix string, i int, item barbuilder.Item, principal *identifi
 		if err != nil {
 			return "", nil, err
 		}
-		if principal != "" {
-			return "", nil, fmt.Errorf("principal is not supported in sub touch bars")
-		}
 		result = itemPopover{
 			CommonProperties: widget.CommonProperties,
 			CollapsedText:    widget.CollapsedText,
 			CollapsedImage:   widget.CollapsedImage,
 			Bar:              list,
+			Principal:        principal,
 			PressAndHold:     widget.PressAndHold,
 		}
 
