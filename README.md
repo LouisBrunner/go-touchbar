@@ -40,7 +40,7 @@ if err != nil {
 
 ### Configuration
 
-![Demo](./docs/demo.mp4)
+https://user-images.githubusercontent.com/7120871/197391736-450bef36-4dd6-4c79-8ae7-3bd68a932eec.mp4
 
 See [example application](./examples/tester/main.go) for a real-life example.
 
