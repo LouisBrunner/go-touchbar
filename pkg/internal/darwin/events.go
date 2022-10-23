@@ -55,6 +55,9 @@ func (me *touchBar) handleEventLogic(eventJSON string) (func(), error) {
 		if !found {
 			return nil, fmt.Errorf("unknown color picker %v", event.Target)
 		}
+		if handler == nil {
+			return nil, nil
+		}
 		data := barbuilder.ColorPickerColor{}
 		err := json.Unmarshal(event.Data, &data)
 		if err != nil {
@@ -68,6 +71,9 @@ func (me *touchBar) handleEventLogic(eventJSON string) (func(), error) {
 		handler, found := me.handlers.customs[event.Target]
 		if !found {
 			return nil, fmt.Errorf("unknown custom %v", event.Target)
+		}
+		if handler == nil {
+			return nil, nil
 		}
 		data := barbuilder.CustomEvent{}
 		err := json.Unmarshal(event.Data, &data)
@@ -83,6 +89,9 @@ func (me *touchBar) handleEventLogic(eventJSON string) (func(), error) {
 		if !found {
 			return nil, fmt.Errorf("unknown picker %v", event.Target)
 		}
+		if handler == nil {
+			return nil, nil
+		}
 		data := 0
 		err := json.Unmarshal(event.Data, &data)
 		if err != nil {
@@ -96,6 +105,9 @@ func (me *touchBar) handleEventLogic(eventJSON string) (func(), error) {
 		handler, found := me.handlers.scrubbers[event.Target]
 		if !found {
 			return nil, fmt.Errorf("unknown scrubber %v", event.Target)
+		}
+		if handler == nil {
+			return nil, nil
 		}
 		data := 0
 		err := json.Unmarshal(event.Data, &data)
@@ -111,6 +123,9 @@ func (me *touchBar) handleEventLogic(eventJSON string) (func(), error) {
 		if !found {
 			return nil, fmt.Errorf("unknown segment %v", event.Target)
 		}
+		if handler == nil {
+			return nil, nil
+		}
 		data := []bool{}
 		err := json.Unmarshal(event.Data, &data)
 		if err != nil {
@@ -125,6 +140,9 @@ func (me *touchBar) handleEventLogic(eventJSON string) (func(), error) {
 		if !found {
 			return nil, fmt.Errorf("unknown slider %v", event.Target)
 		}
+		if handler == nil {
+			return nil, nil
+		}
 		data := float64(0)
 		err := json.Unmarshal(event.Data, &data)
 		if err != nil {
@@ -138,6 +156,9 @@ func (me *touchBar) handleEventLogic(eventJSON string) (func(), error) {
 		handler, found := me.handlers.steppers[event.Target]
 		if !found {
 			return nil, fmt.Errorf("unknown stepper %v", event.Target)
+		}
+		if handler == nil {
+			return nil, nil
 		}
 		data := float64(0)
 		err := json.Unmarshal(event.Data, &data)
@@ -160,7 +181,7 @@ func (me *touchBar) handleEvent(eventJSON string) {
 		me.options.EventErrorLogger(err)
 	}
 	me.lock.Unlock()
-	if err == nil {
+	if err == nil && handler != nil {
 		handler()
 	}
 }
