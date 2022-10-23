@@ -8,7 +8,7 @@ import (
 func makeCommonCatalog(switcher barutils.Switcher) barbuilder.Item {
 	return barutils.VirtualPopover(barbuilder.Popover{
 		CollapsedText:  "Common",
-		CollapsedImage: barbuilder.SFSymbol("list.star"),
+		CollapsedImage: barbuilder.SFSymbol("figure.stand"),
 		Bar: []barbuilder.Item{
 			&barbuilder.Label{
 				Content: &barbuilder.ContentLabel{
@@ -179,6 +179,55 @@ func makeCommonCatalog(switcher barutils.Switcher) barbuilder.Item {
 					},
 				},
 			},
+			&barbuilder.SpaceSmall{},
+			&barbuilder.Popover{
+				CollapsedText: "Spaces",
+				Bar: []barbuilder.Item{
+					&barbuilder.Label{
+						Content: &barbuilder.ContentLabel{
+							Text: "Small:",
+						},
+					},
+					&barbuilder.SpaceSmall{},
+					&barbuilder.Label{
+						Content: &barbuilder.ContentLabel{
+							Text: "Large:",
+						},
+					},
+					&barbuilder.SpaceLarge{},
+					&barbuilder.Label{
+						Content: &barbuilder.ContentLabel{
+							Text: "Flexible:",
+						},
+					},
+					&barbuilder.SpaceFlexible{},
+					&barbuilder.Label{
+						Content: &barbuilder.ContentLabel{
+							Text: "End",
+						},
+					},
+				},
+			},
+			// FIXME: doesn't work at the moment
+			// &barbuilder.SpaceSmall{},
+			// &barbuilder.Popover{
+			// 	CollapsedText: "Text",
+			// 	Bar: []barbuilder.Item{
+			// 		&barbuilder.TextFormat{},
+			// 		&barbuilder.TextAlignment{},
+			// 		&barbuilder.TextColorPicker{},
+			// 		&barbuilder.TextList{},
+			// 		&barbuilder.TextStyle{},
+			// 	},
+			// },
+			// &barbuilder.SpaceSmall{},
+			// barutils.VirtualPopover(barbuilder.Popover{
+			// 	CollapsedText: "Others",
+			// 	Bar: []barbuilder.Item{
+			// 		&barbuilder.CharacterPicker{},
+			// 		&barbuilder.CandidateList{},
+			// 	},
+			// }, switcher),
 		},
 	}, switcher)
 }

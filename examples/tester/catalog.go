@@ -7,7 +7,6 @@ import (
 
 func makeCatalog(switcher barutils.Switcher, update func()) barbuilder.Item {
 	// TODO: showcase Escape
-	// TODO: showcase standards
 	return barutils.VirtualPopover(barbuilder.Popover{
 		CollapsedText:  "Catalog",
 		CollapsedImage: barbuilder.TBBookmarksTemplate,
@@ -20,8 +19,14 @@ func makeCatalog(switcher barutils.Switcher, update func()) barbuilder.Item {
 			makeCommonCatalog(switcher),
 			makeLabelCatalog(),
 			makeButtonCatalog(update),
-			makePopoverCatalog(switcher),
-			makeSliderCatalog(switcher, update),
+			barutils.VirtualPopover(barbuilder.Popover{
+				CollapsedText:  "Next",
+				CollapsedImage: barbuilder.TBBookmarksTemplate,
+				Bar: []barbuilder.Item{
+					makePopoverCatalog(switcher),
+					makeSliderCatalog(switcher, update),
+				},
+			}, switcher),
 		},
 	}, switcher)
 }

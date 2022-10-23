@@ -28,51 +28,52 @@ var _ Item = &SpaceFlexible{}
 
 func (me *SpaceFlexible) isAnItem() {}
 
-type CharacterPicker struct {
-}
+// TODO: no idea how to use them?
+// type CharacterPicker struct {
+// }
 
-var _ Item = &CharacterPicker{}
+// var _ Item = &CharacterPicker{}
 
-func (me *CharacterPicker) isAnItem() {}
+// func (me *CharacterPicker) isAnItem() {}
 
-type CandidateList struct {
-}
+// type CandidateList struct {
+// }
 
-var _ Item = &CandidateList{}
+// var _ Item = &CandidateList{}
 
-func (me *CandidateList) isAnItem() {}
+// func (me *CandidateList) isAnItem() {}
 
-type TextFormat struct {
-}
+// type TextFormat struct {
+// }
 
-var _ Item = &TextFormat{}
+// var _ Item = &TextFormat{}
 
-func (me *TextFormat) isAnItem() {}
+// func (me *TextFormat) isAnItem() {}
 
-type TextAlignment struct {
-}
+// type TextAlignment struct {
+// }
 
-var _ Item = &TextAlignment{}
+// var _ Item = &TextAlignment{}
 
-func (me *TextAlignment) isAnItem() {}
+// func (me *TextAlignment) isAnItem() {}
 
-type TextColorPicker struct {
-}
+// type TextColorPicker struct {
+// }
 
-var _ Item = &TextColorPicker{}
+// var _ Item = &TextColorPicker{}
 
-func (me *TextColorPicker) isAnItem() {}
+// func (me *TextColorPicker) isAnItem() {}
 
-type TextList struct {
-}
+// type TextList struct {
+// }
 
-var _ Item = &TextList{}
+// var _ Item = &TextList{}
 
-func (me *TextList) isAnItem() {}
+// func (me *TextList) isAnItem() {}
 
-type TextStyle struct {
-}
+// type TextStyle struct {
+// }
 
-var _ Item = &TextStyle{}
+// var _ Item = &TextStyle{}
 
-func (me *TextStyle) isAnItem() {}
+// func (me *TextStyle) isAnItem() {}

@@ -67,13 +67,13 @@ But also from this list of standard Apple widgets which have no customizable opt
 - `SpaceSmall`: a small space
 - `SpaceLarge`: a bigger space
 - `SpaceFlexible`: a space that grows as much as possible
-- `CharacterPicker`: opens the macOS character picker (e.g. to pick an emoji)
+<!-- - `CharacterPicker`: opens the macOS character picker (e.g. to pick an emoji)
 - `CandidateList`: shows the standard macOS predictive text widget
 - `TextFormat`: a group of text formatting options
 - `TextAlignment`: allows to pick text alignement
 - `TextColorPicker`: allows to pick text color
 - `TextList`: allows to pick text listing options
-- `TextStyle`: allows to pick text style
+- `TextStyle`: allows to pick text style -->
 
 ## Further work
 

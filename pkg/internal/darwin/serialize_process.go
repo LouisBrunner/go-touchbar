@@ -149,20 +149,20 @@ func processItem(prefix string, i int, item barbuilder.Item, principal *identifi
 		id = standardSpaceLarge
 	case *barbuilder.SpaceFlexible:
 		id = standardSpaceFlexible
-	case *barbuilder.CharacterPicker:
-		id = standardCharacterPicker
-	case *barbuilder.CandidateList:
-		id = standardCandidateList
-	case *barbuilder.TextFormat:
-		id = standardTextFormat
-	case *barbuilder.TextAlignment:
-		id = standardTextAlignment
-	case *barbuilder.TextColorPicker:
-		id = standardTextColorPicker
-	case *barbuilder.TextList:
-		id = standardTextList
-	case *barbuilder.TextStyle:
-		id = standardTextStyle
+	// case *barbuilder.CharacterPicker:
+	// 	id = standardCharacterPicker
+	// case *barbuilder.CandidateList:
+	// 	id = standardCandidateList
+	// case *barbuilder.TextFormat:
+	// 	id = standardTextFormat
+	// case *barbuilder.TextAlignment:
+	// 	id = standardTextAlignment
+	// case *barbuilder.TextColorPicker:
+	// 	id = standardTextColorPicker
+	// case *barbuilder.TextList:
+	// 	id = standardTextList
+	// case *barbuilder.TextStyle:
+	// 	id = standardTextStyle
 
 	default:
 		return "", nil, fmt.Errorf("unknown item type %T (%v)", item, item)
