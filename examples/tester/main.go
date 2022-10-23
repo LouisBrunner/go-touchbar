@@ -7,6 +7,7 @@ import (
 
 	touchbar "github.com/LouisBrunner/go-touchbar/pkg"
 	"github.com/LouisBrunner/go-touchbar/pkg/barbuilder"
+	"github.com/LouisBrunner/go-touchbar/pkg/barutils"
 )
 
 var spinValues = []string{"🍒", "💎", "7️⃣", "🍊", "🔔", "⭐", "🍇", "🍀"}
@@ -25,53 +26,32 @@ func getRandomValue() (*string, error) {
 
 func main() {
 	tb := touchbar.New(barbuilder.Options{})
-	var items, catalogItems, startItems []barbuilder.Item
-	updater := func() {
-		err := tb.Update(barbuilder.Configuration{Items: items})
-		if err != nil {
-			fmt.Printf("error: %+v\n", err)
+
+	makeUpdater := func(switcher barutils.Switcher) func() {
+		return func() {
+			err := switcher.Update()
+			if err != nil {
+				fmt.Printf("could not update: %v\n", err)
+			}
 		}
 	}
 
-	startItems = []barbuilder.Item{
-		&barbuilder.Label{
-			Content: &barbuilder.ContentLabel{
-				Text: "Go Touch Bar",
+	config := barutils.MakeStackableBar(tb, func(switcher barutils.Switcher) []barbuilder.Item {
+		update := makeUpdater(switcher)
+		return []barbuilder.Item{
+			&barbuilder.Label{
+				Content: &barbuilder.ContentLabel{
+					Text: "Go Touch Bar",
+				},
 			},
-		},
-		&barbuilder.SpaceLarge{},
-		makeDemo(updater),
-		&barbuilder.SpaceSmall{},
-		&barbuilder.Button{
-			Title: "Catalog",
-			Image: barbuilder.TBBookmarksTemplate,
-			OnClick: func() {
-				items = catalogItems
-				updater()
-			},
-		},
-	}
+			&barbuilder.SpaceLarge{},
+			makeDemo(update),
+			&barbuilder.SpaceSmall{},
+			makeCatalog(switcher, update),
+		}
+	})
 
-	catalogItems = []barbuilder.Item{
-		&barbuilder.Button{
-			Title: "Close",
-			OnClick: func() {
-				items = startItems
-				updater()
-			},
-		},
-		&barbuilder.Label{
-			Content: &barbuilder.ContentLabel{
-				Text: "Catalog",
-			},
-		},
-		makeLabelCatalog(),
-		makeButtonCatalog(updater),
-		// makePopoverCatalog(),
-	}
-
-	items = startItems
-	err := tb.Debug(barbuilder.Configuration{Items: items})
+	err := tb.Debug(config)
 	if err != nil {
 		panic(err)
 	}

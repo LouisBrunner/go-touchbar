@@ -91,10 +91,11 @@ Check TODO/FIXME as well
 - Support standard/UI colors
 - Support custom images
 - Better validation in Go (validator on the structs?)
-- Make a catalog like [Apple's](https://developer.apple.com/documentation/appkit/touch_bar/creating_and_customizing_the_touch_bar?language=objc)
 
 ## Acknowledgements
 
 This library's API was influenced by [Electron's](https://www.electronjs.org/docs/latest/api/touch-bar).
 
-The [example application](./examples/tester/demo.go) is a reimplementation of [`electron-touch-bar`](https://github.com/pahund/electron-touch-bar).
+The [demo application](./examples/tester/demo.go) is a reimplementation of [`electron-touch-bar`](https://github.com/pahund/electron-touch-bar).
+
+The [catalog](./examples/tester/catalog.go) was influenced by [Apple's](https://developer.apple.com/documentation/appkit/touch_bar/creating_and_customizing_the_touch_bar?language=objc), which also helped with the Objective-C part of the implementation.

@@ -2,7 +2,25 @@ package main
 
 import (
 	"github.com/LouisBrunner/go-touchbar/pkg/barbuilder"
+	"github.com/LouisBrunner/go-touchbar/pkg/barutils"
 )
+
+func makeCatalog(switcher barutils.Switcher, update func()) barbuilder.Item {
+	return barutils.VirtualPopover(barbuilder.Popover{
+		CollapsedText:  "Catalog",
+		CollapsedImage: barbuilder.TBBookmarksTemplate,
+		Bar: []barbuilder.Item{
+			&barbuilder.Label{
+				Content: &barbuilder.ContentLabel{
+					Text: "Catalog",
+				},
+			},
+			makeLabelCatalog(),
+			makeButtonCatalog(update),
+			makePopoverCatalog(switcher),
+		},
+	}, switcher)
+}
 
 func makeLabelCatalog() barbuilder.Item {
 	return &barbuilder.Popover{
@@ -89,4 +107,18 @@ func makeButtonCatalog(update func()) barbuilder.Item {
 			result,
 		},
 	}
+}
+
+func makePopoverCatalog(switcher barutils.Switcher) barbuilder.Item {
+	return barutils.VirtualPopover(barbuilder.Popover{
+		CollapsedText:  "Popover",
+		CollapsedImage: barbuilder.SFSymbol("bubble.left.fill"),
+		Bar: []barbuilder.Item{
+			&barbuilder.Label{
+				Content: &barbuilder.ContentLabel{
+					Text: "Popover",
+				},
+			},
+		},
+	}, switcher)
 }
