@@ -15,3 +15,4 @@
 # vendor/
 
 examples/Test.app/Contents/MacOS/tester
+.DS_Store
