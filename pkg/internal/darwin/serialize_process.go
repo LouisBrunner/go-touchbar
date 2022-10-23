@@ -123,6 +123,16 @@ func processItem(prefix string, i int, item barbuilder.Item, principal *identifi
 			return "", nil, fmt.Errorf("cannot use this item in this context %T (%v)", item, item)
 		}
 		handlers.sliders[id] = widget.OnChange
+		result = itemSlider{
+			CommonProperties: widget.CommonProperties,
+			Label:            widget.Label,
+			StartValue:       widget.StartValue,
+			MinimumValue:     widget.MinimumValue,
+			MaximumValue:     widget.MaximumValue,
+			MinimumAccessory: widget.MinimumAccessory,
+			MaximumAccessory: widget.MaximumAccessory,
+			AccessoryWidth:   widget.AccessoryWidth,
+		}
 
 	case *barbuilder.Stepper:
 		id = makeID(prefix, "stepper", i)

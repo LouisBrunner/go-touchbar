@@ -58,7 +58,7 @@ You configure this library by specifying a list of items from the following opti
 - **NOT IMPLEMENTED** `Scrubber`: allows to select items from a list, which supports scrolling (has an event handler)
 - **NOT IMPLEMENTED** `SegmentedControl`: shows multiple buttons grouped together, similar to `Picker` (has an event handler)
 - **NOT IMPLEMENTED** `Sharer`: allows to share using the standard macOS sharing system
-- **NOT IMPLEMENTED** `Slider`: a slider used to pick value in a range (has an event handler)
+- `Slider`: a slider used to pick value in a range (has an event handler)
 - **NOT IMPLEMENTED** `Stepper`: a control to pick a value in a range through increments (has an event handler)
 
 But also from this list of standard Apple widgets which have no customizable options:
@@ -91,6 +91,7 @@ Check TODO/FIXME as well
 - Support standard/UI colors
 - Support custom images
 - Better validation in Go (validator on the structs?)
+- A few random crashes: `signal arrived during cgo execution` and `[touchBar itemIdentifiers] was mutated while items array was being built` (in `[WindowController setupTouchBar]`)
 
 ## Acknowledgements
 

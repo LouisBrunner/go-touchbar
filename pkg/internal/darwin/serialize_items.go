@@ -24,6 +24,18 @@ type itemGroup struct {
 	PreferredItemWidth float32
 }
 
+type itemSlider struct {
+	barbuilder.CommonProperties
+
+	Label            string
+	StartValue       float64
+	MinimumValue     float64
+	MaximumValue     float64
+	MinimumAccessory barbuilder.Image
+	MaximumAccessory barbuilder.Image
+	AccessoryWidth   barbuilder.SliderAccessoryWidth
+}
+
 type itemPopover struct {
 	barbuilder.CommonProperties
 

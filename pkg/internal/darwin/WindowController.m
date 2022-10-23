@@ -138,6 +138,12 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
     [self updateWidgetPopover:myItem touchBar:[[NSTouchBar alloc] init] withData:data];
     item = myItem;
 
+  } else if ([identifier hasPrefix:prefixSlider]) {
+    NSSliderTouchBarItem* myItem = [[[NSSliderTouchBarItem alloc] initWithIdentifier:identifier] autorelease];
+    [self updateWidgetSlider:myItem withData:data];
+    myItem.slider.doubleValue = [[data valueForKeyPath:@"StartValue"] doubleValue];
+    item = myItem;
+
   } else {
     NSLog(@"warning: unsupported identifier %@ with %@", identifier, data);
   }
@@ -170,6 +176,8 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
       for (id child in [data objectForKey:@"Bar"]) {
         [self updateItem:sub withIdentifier:[self transformIdentifier:child]];
       }
+    } else if ([identifier hasPrefix:prefixSlider]) {
+      [self updateWidgetSlider:item withData:data];
     } else {
       NSLog(@"warning: unknown identifier %@ with %@", identifier, data);
     }
@@ -200,6 +208,12 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
   item.bezelColor = [self transformColor:[data valueForKeyPath:@"BezelColor"]];
 }
 
+- (void)buttonAction:(id)sender {
+  NSString* identifier = ((NSButtonTouchBarItem*) sender).identifier;
+  const char * event = [[NSString stringWithFormat:@"{\"Kind\":\"button\",\"Target\":\"%@\"}", identifier] UTF8String];
+  self.handler((char*) event);
+}
+
 - (void)updateWidgetPopover:(NSPopoverTouchBarItem*)item touchBar:(NSTouchBar*)sub withData:(NSDictionary*)data {
   [self updateWidgetCore:item withData:data];
 
@@ -215,9 +229,42 @@ static NSTouchBarItemIdentifier prefixStepper = @"net.lbrunner.touchbar.stepper.
   sub.delegate = self;
 }
 
-- (void)buttonAction:(id)sender {
-  NSString* identifier = ((NSButtonTouchBarItem*) sender).identifier;
-  const char * event = [[NSString stringWithFormat:@"{\"Kind\":\"button\",\"Target\":\"%@\"}", identifier] UTF8String];
+- (void)updateWidgetSlider:(NSSliderTouchBarItem*)item withData:(NSDictionary*)data {
+  [self updateWidgetCore:item withData:data];
+
+  // FIXME: weird NSLayoutConstraintNumberExceedsLimit warning
+  item.label = [data valueForKeyPath:@"Label"];
+  NSImage* minimumAccessory = [self transformImage:[data valueForKeyPath:@"MinimumAccessory"]];
+  if (minimumAccessory != nil) {
+    item.minimumValueAccessory = [NSSliderAccessory accessoryWithImage:minimumAccessory];
+  } else {
+    item.minimumValueAccessory = nil;
+  }
+  NSImage* maximumAccessory = [self transformImage:[data valueForKeyPath:@"MaximumAccessory"]];
+  if (maximumAccessory != nil) {
+    item.maximumValueAccessory = [NSSliderAccessory accessoryWithImage:maximumAccessory];
+  } else {
+    item.maximumValueAccessory = nil;
+  }
+  NSString* accessoryWidth = [data valueForKeyPath:@"AccessoryWidth"];
+  if ([accessoryWidth isEqual:@"wide"]) {
+    item.valueAccessoryWidth = NSSliderAccessoryWidthWide;
+  } else {
+    item.valueAccessoryWidth = NSSliderAccessoryWidthDefault;
+  }
+  item.slider.minValue = [[data valueForKeyPath:@"MinimumValue"] doubleValue];
+  item.slider.maxValue = [[data valueForKeyPath:@"MaximumValue"] doubleValue];
+  item.target = self;
+  item.action = @selector(sliderAction:);
+}
+
+- (void)sliderAction:(NSSliderTouchBarItem*) sender {
+  NSString* identifier = sender.identifier;
+  const char * event = [[NSString
+    stringWithFormat:@"{\"Kind\":\"slider\",\"Target\":\"%@\",\"Data\":%f}",
+    identifier,
+    sender.slider.doubleValue
+  ] UTF8String];
   self.handler((char*) event);
 }
 
