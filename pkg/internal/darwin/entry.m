@@ -69,6 +69,7 @@ InitResult initTouchBar(AttachMode mode, const char * data, void* me) {
   NSWindow* window;
   if (mode == kMainWindow) {
     window = app.mainWindow;
+    [app setDelegate:controller];
   } else if (mode == kDebug) {
     window = makeDebugWindow(app);
   } else {
